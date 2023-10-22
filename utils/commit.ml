@@ -10,3 +10,5 @@ type commit = {
   parent : commit;
   changes : (filename * hash) list;
 }
+
+(* TODO: add helper methods to read/write commits to/from the .got directory *)
