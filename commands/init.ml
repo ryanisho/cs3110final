@@ -9,13 +9,11 @@ module Init : Command.EmptyCommand = struct
            "A Got version-control system already exists in the current \
             directory.")
     else
-      let () = Sys.mkdir (Constants.repo_root () ^ ".got") 0o755 in
-      let () = Sys.mkdir (Constants.repo_root () ^ ".got/blobs") 0o755 in
-      let () = Sys.mkdir (Constants.repo_root () ^ ".got/commits") 0o755 in
+      let () = Sys.mkdir (Fs.Repo.got_dir ()) 0o755 in
+      let () = Sys.mkdir (Fs.Repo.blob_dir ()) 0o755 in
+      let () = Sys.mkdir (Fs.Repo.commit_dir ()) 0o755 in
       let () =
-        let out_channel =
-          open_out (Constants.repo_root () ^ ".got/stage.msh")
-        in
+        let out_channel = open_out (Fs.Repo.stage_file ()) in
         output_string out_channel "";
         close_out out_channel
       in
