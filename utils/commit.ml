@@ -6,7 +6,7 @@ type t = {
   timestamp : string;
   message : string;
   parent : Filesystem.filename option;
-  changes : (Filesystem.filename * Hash.t) list;
+  changes : Stage.t; (* changes : (Filesystem.filename * Hash.t) list; *)
 }
 
 (* TODO: add helper methods to read/write commits to/from the .got directory *)
@@ -19,14 +19,17 @@ let retrieve_latest_commit_filename () : Filesystem.filename option =
   else Some (List.hd (List.rev (List.sort compare commit_filenames)))
 
 let write_commit (stage : Stage.t) (message : string) : string =
-  (* TODO: actually write blobs to disk *)
+  (* TODO: actually write blobs to disk (probably in Add) *)
   let commit : t =
     {
       timestamp = string_of_int (int_of_float (Unix.time ()));
       message;
       parent = retrieve_latest_commit_filename ();
       (* TODO *)
-      changes = [];
+      changes =
+        stage
+        (* stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
+           (file_metadata.name, file_metadata.hash)); *);
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)

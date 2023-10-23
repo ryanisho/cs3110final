@@ -18,4 +18,7 @@ let string_of_file file =
 
 (* TODO: use this function in Stage *)
 (* TODO: make module around marshal and parameterize module on datatype? *)
-let marshal_data_to_file (data : 'a) (filename : filename) : unit = ()
+let marshal_data_to_file (data : 'a) (full_path : filename) : unit =
+  let out_channel = open_out full_path in
+  Marshal.to_channel out_channel (data : 'a) [];
+  close_out out_channel
