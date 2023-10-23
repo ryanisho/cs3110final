@@ -62,10 +62,7 @@ let marshal_from_filenames_to_stage_file files =
     in
     add_file_metadata_helper files (marshal_from_stage_file ())
   in
-  (* Couldn't refactor with Filesystem.marshal_data_to_file because
-     add_file_metadata requires the file to exist first *)
-  let out_channel = open_out (Filesystem.Repo.stage_file ()) in
-  Marshal.to_channel out_channel
-    (add_file_metadata (get_added_files files) : t)
-    [];
-  close_out out_channel
+  (* add_file_metadata requires the file to exist first *)
+  Filesystem.marshal_data_to_file [] (Filesystem.Repo.stage_file ());
+  let stage = add_file_metadata (get_added_files files) in
+  Filesystem.marshal_data_to_file stage (Filesystem.Repo.stage_file ())
