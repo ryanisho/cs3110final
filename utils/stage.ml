@@ -8,13 +8,12 @@ let rec get_added_files files =
   match files with
   | [] -> []
   | file :: tl ->
-      if Sys.file_exists (Constants.repo_root () ^ file) then
+      if Sys.file_exists (Fs.Repo.root () ^ file) then
         file :: get_added_files tl
       else raise (Failure (file ^ " does not exist"))
 
 let get_staged_metadata () : file_metadata list =
-  let stage = Constants.repo_root () ^ ".got/stage.msh" in
-  let in_channel = open_in stage in
+  let in_channel = open_in (Fs.Repo.stage_file ()) in
   try
     let metadata = Marshal.from_channel in_channel in
     close_in in_channel;
@@ -53,6 +52,6 @@ let add_file_metadata files =
   add_file_metadata_helper files (get_staged_metadata ())
 
 let marshal_to_stage files =
-  let out_channel = open_out (Constants.repo_root () ^ ".got/stage.msh") in
+  let out_channel = open_out (Fs.Repo.stage_file ()) in
   Marshal.to_channel out_channel (add_file_metadata (get_added_files files)) [];
   close_out out_channel
