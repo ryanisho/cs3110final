@@ -4,7 +4,8 @@ type file_metadata = {
   contents : string;
 }
 
-let rec get_added_files files =
+(* Check that all added files exist; raise exception if not *)
+let rec get_added_files (files : string list) : string list =
   match files with
   | [] -> []
   | file :: tl ->
@@ -12,6 +13,7 @@ let rec get_added_files files =
         file :: get_added_files tl
       else raise (Failure (file ^ " does not exist"))
 
+(* Read data from [stage.msh] into a list of file_metadata *)
 let get_staged_metadata () : file_metadata list =
   let in_channel = open_in (Fs.Repo.stage_file ()) in
   try
@@ -22,6 +24,8 @@ let get_staged_metadata () : file_metadata list =
     close_in in_channel;
     []
 
+(* Given a file and list of file_metadata, update the file's metadata if it is
+   already in the list; otherwise add its metadata to the list *)
 let rec update_metadata (file : string) (metadata : file_metadata list) :
     file_metadata list =
   match metadata with
@@ -43,6 +47,8 @@ let rec update_metadata (file : string) (metadata : file_metadata list) :
         };
       ]
 
+(* For each file in the list of added files, add / update the list of
+   metadata *)
 let add_file_metadata files =
   let rec add_file_metadata_helper files metadata =
     match files with
@@ -51,6 +57,7 @@ let add_file_metadata files =
   in
   add_file_metadata_helper files (get_staged_metadata ())
 
+(* Serialize the list of metadata, writing to [stage.msh] *)
 let marshal_to_stage files =
   let out_channel = open_out (Fs.Repo.stage_file ()) in
   Marshal.to_channel out_channel (add_file_metadata (get_added_files files)) [];
