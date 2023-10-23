@@ -1,0 +1,34 @@
+---
+# Members of your group.
+group:
+  - name: Bryant Park
+    netid: blp73
+  - name: Chris Xu 
+    netid: cx72
+  - name: Junkai Zheng
+    netid: jz765
+  - name: Ryan Ho
+    netid: rh564
+# Your PM.
+pm:
+  name: Christy Song
+  netid: cs966
+# Set to false if you don't want your gallery entry to be public.
+publish: true
+# Pithy title
+title: "Got: A version of a version control system"
+# OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
+git-repo: "https://github.com/ryanisho/got"
+# If you have no demo screencast, replace the url string with an empty string ""
+demo-video-url: ""
+# Write a short, attention-grabbing description of your project.
+desc: >
+  Our project, Got, is a version control system, similar to Git. It supports standard Git 
+  commands such as init, add, status, log, and diff. 
+
+  The main functionality that Got will support is 
+  (1) Saving directories or files
+  (2) Restore past versions of files 
+  (3) Viewing past backups 
+  
+  Users can interact with Got via the command line. 
