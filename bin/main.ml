@@ -6,7 +6,7 @@ let () =
     match args with
     | "init" :: _ -> Commands.Init.run ()
     | "add" :: files -> Commands.Add.run files
-    | "commit" :: _ -> Commands.Commit.run [ "a" ]
+    | "commit" :: files -> Commands.Commit.run files
     | [] -> "Usage: got [init] [add] [commit]"
     | _ -> "Command not supported!"
   in
