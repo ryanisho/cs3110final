@@ -7,6 +7,7 @@ type file_metadata = {
 (* Accessible externally as Stage.t *)
 type t = file_metadata list
 
+(* Read data from [stage.msh] into a list of file_metadata *)
 let marshal_from_stage_file () : t =
   let in_channel = open_in (Filesystem.Repo.stage_file ()) in
   try
@@ -18,7 +19,9 @@ let marshal_from_stage_file () : t =
     close_in in_channel;
     []
 
+(* Serialize the list of metadata, writing to [stage.msh] *)
 let marshal_from_filenames_to_stage_file files =
+  (* Check that all added files exist; raise exception if not *)
   let rec get_added_files files =
     match files with
     | [] -> []
@@ -28,6 +31,8 @@ let marshal_from_filenames_to_stage_file files =
         else raise (Failure (file ^ " does not exist"))
   in
 
+  (* Given a file and list of file_metadata, update the file's metadata if it is
+     already in the list; otherwise add its metadata to the list *)
   let rec update_metadata (file : string) (metadata : t) : t =
     match metadata with
     | data :: tl ->
