@@ -1,3 +1,3 @@
-open Blob
+type t = Sha256.t
 
-let hash obj = 1
+let hash (filename : string) : t = Sha256.string ""

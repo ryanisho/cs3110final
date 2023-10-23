@@ -4,11 +4,11 @@ open Blob
 
 type filename = string
 
-type commit = {
+type t = {
   timestamp : string;
   message : string;
-  parent : commit;
-  changes : (filename * hash) list;
+  parent : t option;
+  changes : (filename * Hash.t) list;
 }
 
 (* TODO: add helper methods to read/write commits to/from the .got directory *)
