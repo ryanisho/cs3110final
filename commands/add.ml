@@ -5,6 +5,6 @@ module Add : Command.ArgCommand = struct
     match files with
     | [] -> "No file added."
     | _ ->
-        let _ = Stage.marshal_to_stage files in
+        Stage.marshal_from_filenames_to_stage_file files;
         "Added " ^ String.concat " " files
 end
