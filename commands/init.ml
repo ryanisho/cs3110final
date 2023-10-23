@@ -1,4 +1,5 @@
 open Utils
+(* open Commit *)
 
 module Init : Command.EmptyCommand = struct
   let run () : string =
@@ -9,5 +10,7 @@ module Init : Command.EmptyCommand = struct
             directory.")
     else
       let () = Sys.mkdir ".got" 0o755 in
+      let () = Sys.mkdir ".got/blobs" 0o755 in
+      let () = Sys.mkdir ".got/commits" 0o755 in
       "Initialized empty repository."
 end

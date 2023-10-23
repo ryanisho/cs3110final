@@ -5,7 +5,9 @@ let () =
   let output =
     match args with
     | "init" :: _ -> Commands.Init.run ()
-    | [] -> "Usage: got [init]"
+    | "add" :: files -> Commands.Add.run files
+    | "commit" :: _ -> Commands.Commit.run [ "a" ]
+    | [] -> "Usage: got [init] [add] [commit]"
     | _ -> "Command not supported!"
   in
   print_endline output
