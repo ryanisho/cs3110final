@@ -1,3 +1,5 @@
+type filename = string
+
 module Repo = struct
   let root () = "repo/"
   let got_dir () = root () ^ ".got/"
@@ -13,3 +15,7 @@ let string_of_file file =
   really_input ic s 0 n;
   close_in ic;
   Bytes.to_string s
+
+(* TODO: use this function in Stage *)
+(* TODO: make module around marshal and parameterize module on datatype? *)
+let marshal_data_to_file (data : 'a) (filename : filename) : unit = ()
