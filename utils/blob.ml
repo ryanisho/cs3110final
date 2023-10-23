@@ -1,9 +1,7 @@
 (* TOOD: encapsulate in module? *)
 
-type hash = string
-
-type blob = {
-  hash : hash;
+type t = {
+  hash : Hash.t;
   contents : string;
 }
 
