@@ -3,5 +3,5 @@ module Commit : Utils.Command.ArgCommand = struct
     let stage = Utils.Stage.marshal_from_stage_file () in
     let message = List.hd args in
     let timestamp = Utils.Commit.write_commit stage message in
-    "Committed " ^ timestamp ^ "."
+    "Committed " ^ timestamp ^ " :: " ^ message
 end
