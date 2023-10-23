@@ -25,7 +25,6 @@ let write_commit (stage : Stage.t) (message : string) : string =
       timestamp = string_of_int (int_of_float (Unix.time ()));
       message;
       parent = retrieve_latest_commit_filename ();
-      (* TODO *)
       changes =
         stage
         (* stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
@@ -33,6 +32,7 @@ let write_commit (stage : Stage.t) (message : string) : string =
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
-    commit commit.timestamp;
+    commit
+    (Filesystem.Repo.commit_dir () ^ commit.timestamp);
   Stage.marshal_from_filenames_to_stage_file [];
   commit.timestamp
