@@ -22,3 +22,9 @@ let marshal_data_to_file (data : 'a) (full_path : filename) : unit =
   let out_channel = open_out full_path in
   Marshal.to_channel out_channel (data : 'a) [];
   close_out out_channel
+
+let marshal_file_to_data (full_path : filename) : 'a =
+  let in_channel = open_in full_path in
+  let data = Marshal.from_channel in_channel in
+  close_in in_channel;
+  data

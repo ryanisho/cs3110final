@@ -1,7 +1,5 @@
 open Blob
 
-(* TODO: encapsulate in module? *)
-
 type t = {
   timestamp : string;
   message : string;
@@ -9,14 +7,12 @@ type t = {
   changes : Stage.t; (* changes : (Filesystem.filename * Hash.t) list; *)
 }
 
-(* TODO: add helper methods to read/write commits to/from the .got directory *)
+let retrieve_all_commit_filenames () : Filesystem.filename list =
+  Filesystem.Repo.commit_dir ()
+  |> Sys.readdir |> Array.to_list |> List.sort compare
 
 let retrieve_latest_commit_filename () : Filesystem.filename option =
-  let commit_filenames =
-    Array.to_list (Sys.readdir (Filesystem.Repo.commit_dir ()))
-  in
-  if List.length commit_filenames = 0 then None
-  else Some (List.hd (List.rev (List.sort compare commit_filenames)))
+  List.nth_opt (List.rev (retrieve_all_commit_filenames ())) 0
 
 let write_commit (stage : Stage.t) (message : string) : string =
   (* TODO: actually write blobs to disk (probably in Add) *)
@@ -36,3 +32,10 @@ let write_commit (stage : Stage.t) (message : string) : string =
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
   Stage.marshal_from_filenames_to_stage_file [];
   commit.timestamp
+
+let fetch_commit (timestamp : Filesystem.filename) : t =
+  Filesystem.marshal_file_to_data (Filesystem.Repo.commit_dir () ^ timestamp)
+
+let get_full_commit_history () : t list =
+  (* TODO: do backwards traversal *)
+  retrieve_all_commit_filenames () |> List.map fetch_commit
