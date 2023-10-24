@@ -1,4 +1,4 @@
-module Init : Utils.Command.EmptyCommand = struct
+module Init : Command.EmptyCommand = struct
   let run () : string =
     if Sys.file_exists (Utils.Filesystem.Repo.got_dir ()) then
       raise

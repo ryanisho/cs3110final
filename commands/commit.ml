@@ -1,4 +1,4 @@
-module Commit : Utils.Command.ArgCommand = struct
+module Commit : Command.ArgCommand = struct
   let run (args : string list) : string =
     let stage = Utils.Stage.marshal_from_stage_file () in
     (* TEMP FIX: flatten all args into message *)

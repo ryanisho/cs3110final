@@ -1,4 +1,4 @@
-module Add : Utils.Command.ArgCommand = struct
+module Add : Command.ArgCommand = struct
   let run files =
     match files with
     | [] -> "No file added."

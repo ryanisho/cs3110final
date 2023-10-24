@@ -1,4 +1,4 @@
-module Log : Utils.Command.EmptyCommand = struct
+module Log : Command.EmptyCommand = struct
   let commit_to_log_entry (commit : Utils.Commit.t) =
     "[" ^ commit.timestamp ^ "] " ^ commit.message ^ "\n"
 
