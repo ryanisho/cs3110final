@@ -1,10 +1,5 @@
-module type ArgCommand = sig
-  val run : string list -> string
-end
+type argumented_command = string list -> string
+type empty_command = unit -> string
 
-module type EmptyCommand = sig
-  val run : unit -> string
-end
-
-(* Commands have a run function that returns the output that should be printed
-   out. The output will actually be printed out in `main.ml`. *)
+(* Commands are a function that returns an output. The output will be printed
+   out in `main.ml`. *)
