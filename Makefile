@@ -4,7 +4,12 @@ build:
 	dune build
 
 test:
-	OCAMLRUNPARAM=b dune exec test/main.exe
+# create new got repository for testing
+	dune exec bin/main.exe init
+# run existing tests
+	-OCAMLRUNPARAM=b dune exec test/main.exe
+# remove test repository
+	rm -rf repo/.got/
 
 clean: 
 	rm -rf repo/.got/
