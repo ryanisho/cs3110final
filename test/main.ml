@@ -15,6 +15,20 @@ let test_commit messages expected_message _ =
   assert_bool "Output does not start with 'Committed'" startswith_committed;
   assert_bool "Output does not contain the correct commit message" contains_message
 
+let test_log expected_log_entries _ =
+  let result = Commands.Log.run () in
+  assert_equal expected_log_entries result ~printer:(fun x -> x)
+
+(* Function to capture timestamp from commit *)
+let commit_and_get_log_entry message =
+  ignore (Commands.Commit.run [message]); (* Commit the message *)
+  match Utils.Commit.retrieve_latest_commit_filename () with
+  | Some filename ->
+    let commit = Utils.Commit.fetch_commit filename in
+    "[" ^ commit.timestamp ^ "] " ^ message (* Construct the log entry *)
+  | None ->
+    failwith "No commit found"
+
 (* test cases *)
 let add = [
   "test with no files" >:: (fun _ -> 
@@ -57,10 +71,21 @@ let commit = [
     ["Invalid char \255 here"] "Invalid char \255 here";
 ]
 
+let log = [
+  "test log with no commits" >:: (fun _ ->
+      let log_entry = commit_and_get_log_entry "" in
+      test_log log_entry ());
+  "test log with one commit" >:: (fun _ ->
+      let log_entry = commit_and_get_log_entry "Initial commit" in
+      test_log log_entry ());
+  (*Working progress*)
+]
+
 (* test suite driver *)
 let tests = List.flatten [
     add;
     commit;
+    log;
   ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite
