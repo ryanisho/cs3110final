@@ -23,8 +23,8 @@ let write_commit (stage : Stage.t) (message : string) : string =
       parent = retrieve_latest_commit_filename ();
       changes =
         stage
-        (* stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
-           (file_metadata.name, file_metadata.hash)); *);
+      (* stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
+         (file_metadata.name, file_metadata.hash)); *);
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
