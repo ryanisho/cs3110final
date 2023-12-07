@@ -12,6 +12,7 @@ test:
 	rm -rf repo/.got/
 
 clean: 
+	dune clean
 	rm -rf repo/.got/
 
 # Commands
