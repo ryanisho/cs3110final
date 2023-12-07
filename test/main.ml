@@ -65,7 +65,7 @@ let add =
     (* extension variability testing *)
     (* Text Files *)
     "test with Markdown file" >:: test_add [ "../test/test/txt/document.md" ];
-    "test with XML file" >:: test_add [ "../test/test/xml/data.xml" ];
+    "test with XML file" >:: test_add [ "../test/test/docs/data.xml" ];
     "test with JSON file" >:: test_add [ "../test/test/json/config.json" ];
     "test with CSV file" >:: test_add [ "../test/test/docs/data.csv" ];
     (* Image Files *)
