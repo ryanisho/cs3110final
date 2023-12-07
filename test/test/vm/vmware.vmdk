@@ -1,0 +1,19 @@
+# Disk DescriptorFile
+version=1
+CID=fffffffe
+parentCID=ffffffff
+createType="monolithicSparse"
+
+# Extent description
+RW 20971520 SPARSE "vmware-sparse.vmdk"
+
+# The Disk Data Base 
+#DDB
+
+ddb.adapterType = "lsilogic"
+ddb.geometry.cylinders = "1305"
+ddb.geometry.heads = "255"
+ddb.geometry.sectors = "63"
+ddb.longContentID = "8a8b8c8d8e8f90919293"
+ddb.uuid = "60 00 C2 9f 8e 4e 2f 4e-3e 7a 3c 9e 9d 5e 9e 2e"
+ddb.virtualHWVersion = "4"
