@@ -1,5 +1,5 @@
 let run : Command.empty_command =
-  fun () ->
+ fun () ->
   if Sys.file_exists (Utils.Filesystem.Repo.got_dir ()) then
     raise
       (Failure

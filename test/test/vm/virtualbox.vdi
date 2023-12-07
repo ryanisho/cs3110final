@@ -1,0 +1,17 @@
+
+# VirtualBox Disk Image
+# Format: VDI
+
+[Header]
+MagicNumber=VDI
+Version=1.0
+Type=Fixed
+Flags=none
+
+[Disk]
+Size=10GB
+Geometry=1024x768
+SectorSize=512
+
+[Data]
+# Disk data goes here...
