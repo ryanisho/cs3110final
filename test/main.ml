@@ -44,29 +44,29 @@ let add =
           let result = Commands.Add.run [] in
           assert_equal "No file added." result );
     (* variation testing *)
-    "test with one file" >:: test_add [ "../test/test/txt/apples.txt" ];
+    "test with one file" >:: test_add [ "../test/test/docs/apples.txt" ];
     "test with multiple files"
     >:: test_add
-      [ "../test/test/txt/apples.txt"; "../test/test/txt/loremipsum.txt" ];
+      [ "../test/test/docs/apples.txt"; "../test/test/docs/loremipsum.txt" ];
     "test with images" >:: test_add [ "../test/test/img/james.png" ];
     "test with multiple images"
     >:: test_add [ "../test/test/img/james.png"; "../test/test/img/chris.png" ];
-    "test with audio" >:: test_add [ "../test/test/mp3/river.mp3" ];
+    "test with audio" >:: test_add [ "../test/test/audio/river.mp3" ];
     "test with multiple audio"
     >:: test_add
-      [ "../test/test/mp3/river.mp3"; "../test/test/mp3/walking.mp3" ];
+      [ "../test/test/audio/river.mp3"; "../test/test/audio/walking.mp3" ];
     "test with images and audio and text"
     >:: test_add
       [
-        "../test/test/txt/apples.txt";
+        "../test/test/docs/apples.txt";
         "../test/test/img/james.png";
-        "../test/test/mp3/river.mp3";
+        "../test/test/audio/river.mp3";
       ];
     (* extension variability testing *)
     (* Text Files *)
-    "test with Markdown file" >:: test_add [ "../test/test/txt/document.md" ];
+    "test with Markdown file" >:: test_add [ "../test/test/docs/document.md" ];
     "test with XML file" >:: test_add [ "../test/test/docs/data.xml" ];
-    "test with JSON file" >:: test_add [ "../test/test/json/config.json" ];
+    "test with JSON file" >:: test_add [ "../test/test/data/config.json" ];
     "test with CSV file" >:: test_add [ "../test/test/docs/data.csv" ];
     (* Image Files *)
     "test with JPEG image" >:: test_add [ "../test/test/img/cat.jpeg" ];
@@ -131,7 +131,7 @@ let add =
     "test with MATLAB file" >:: test_add [ "../test/test/code/calculation.m" ];
     "test with Dockerfile" >:: test_add [ "../test/test/code/Dockerfile" ];
     "test with Git configuration"
-    >:: test_add [ "../test/test/code/.gitconfig" ];
+    >:: test_add [ "../test/test/config/.gitconfig" ];
     "test with Perl script" >:: test_add [ "../test/test/code/script.pl" ];
     "test with Haskell file" >:: test_add [ "../test/test/code/main.hs" ];
     "test with Go file" >:: test_add [ "../test/test/code/app.go" ];
@@ -167,33 +167,35 @@ let add =
     "test with VMware file" >:: test_add [ "../test/test/vm/vmware.vmdk" ];
     "test with Vagrantfile" >:: test_add [ "../test/test/vm/Vagrantfile" ];
     (* Various Document Formats *)
-    "test with ePub file" >:: test_add [ "../test/test/docs/ebook.epub" ];
-    "test with MOBI file" >:: test_add [ "../test/test/docs/ebook.mobi" ];
-    "test with Rich Text Format"
-    >:: test_add [ "../test/test/docs/document.rtf" ];
+    "test with ePub file" >:: test_add [ "../test/test/docs/sample.epub" ];
+    "test with MOBI file" >:: test_add [ "../test/test/docs/sample.mobi" ];
+    "test with Rich Text Format" >:: test_add [ "../test/test/docs/sample.rtf" ];
     "test with OpenDocument Spreadsheet"
-    >:: test_add [ "../test/test/spreadsheet/sheet.ods" ];
+    >:: test_add [ "../test/test/docs/sample.ods" ];
     (* Specialized Data Formats *)
-    "test with HDF5 file" >:: test_add [ "../test/test/data/data.h5" ];
+    "test with HDF5 file" >:: test_add [ "../test/test/data/sample.h5" ];
     "test with GeoJSON file" >:: test_add [ "../test/test/data/map.geojson" ];
-    "test with KML file" >:: test_add [ "../test/test/data/locations.kml" ];
-    "test with Parquet file" >:: test_add [ "../test/test/data/data.parquet" ];
+    "test with KML file" >:: test_add [ "../test/test/data/sample.kml" ];
+    "test with Parquet file" >:: test_add [ "../test/test/data/cars.parquet" ];
     "test with Avro file" >:: test_add [ "../test/test/data/data.avro" ];
     (* Combination of Diverse File Types *)
     "test with various script files"
     >:: test_add
-      [ "../test/test/script/run.sh"; "../test/test/script/automation.py" ];
+      [
+        "../test/test/application/sample1.sh"; "../test/test/code/script.py";
+      ];
     "test with multiple config files"
     >:: test_add
       [ "../test/test/config/nginx.conf"; "../test/test/config/.gitconfig" ];
     "test with mixed media files"
     >:: test_add
-      [ "../test/test/media/video.mp4"; "../test/test/media/audio.mp3" ];
+      [ "../test/test/video/sample.mp4"; "../test/test/audio/river.mp3" ];
     "test with various document types"
     >:: test_add
-      [ "../test/test/docs/file.pdf"; "../test/test/docs/ebook.epub" ];
+      [ "../test/test/docs/file.pdf"; "../test/test/docs/sample.epub" ];
     "test with assorted data files"
-    >:: test_add [ "../test/test/data/data.json"; "../test/test/data/data.csv" ];
+    >:: test_add
+      [ "../test/test/data/config.json"; "../test/test/docs/data.csv" ];
   ]
 
 let commit =
