@@ -7,8 +7,19 @@ let test_add files _ =
   assert_equal ("Added " ^ String.concat " " files) result
 
 let test_commit messages expected_message _ =
+  let dirs = Sys.readdir "./test/test" in
+  let dir_count = Array.length dirs in
+  let random_dir_index = Random.int dir_count in
+  let random_dir = dirs.(random_dir_index) in
+  let files = Sys.readdir ("./test/test/" ^ random_dir) in
+  let file_count = Array.length files in
+  let random_file_index = Random.int file_count in
+  let random_file = files.(random_file_index) in
+  let _ =
+    Commands.Add.run [ "../test/test/" ^ random_dir ^ "/" ^ random_file ]
+  in
   let result = Commands.Commit.run messages in
-  let startswith_committed = String.sub result 0 9 = "Committed" in
+  let starts_with_committed = String.sub result 0 9 = "Committed" in
   let contains_message =
     String.contains result ':'
     && String.sub result
@@ -16,7 +27,7 @@ let test_commit messages expected_message _ =
       (String.length expected_message)
        = expected_message
   in
-  assert_bool "Output does not start with 'Committed'" startswith_committed;
+  assert_bool "Output does not start with 'Committed'" starts_with_committed;
   assert_bool "Output does not contain the correct commit message"
     contains_message
 
@@ -209,12 +220,21 @@ let commit =
       "Added new feature with multiple fixes";
     "test commit with special characters"
     >:: test_commit
-      [ "Fix: Handle the issue #123" ]
-      "Fix: Handle the issue #123";
+      [ "No special characters: !@#$%^&*()_+" ]
+      "No special characters: !@#$%^&*()_+";
     "test commit with very long message"
     >:: test_commit [ String.make 255 'a' ] (String.make 255 'a');
     "test commit with multiline message"
     >:: test_commit [ "First line"; "Second line" ] "First line Second line";
+    "test commit with empty message and no changes" >:: test_commit [ "" ] "";
+    "test commit with escape characters in message"
+    >:: test_commit
+      [ "Fix line breaks\nand tabs\t" ]
+      "Fix line breaks\nand tabs\t";
+    "test commit with excessively long message"
+    >:: test_commit [ String.make 1000 'b' ] (String.make 255 'b');
+    "test commit with invalid characters in message"
+    >:: test_commit [ "Invalid char \255 here" ] "Invalid char \255 here";
   ]
 
 let init =
