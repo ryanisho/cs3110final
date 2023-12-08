@@ -19,6 +19,9 @@ let marshal_from_stage_file () : t =
     close_in in_channel;
     []
 
+(* Denote [file] as removed in [stage.msh] *)
+let remove_from_stage file = ()
+
 (* Serialize the list of metadata, writing to [stage.msh] *)
 let marshal_from_filenames_to_stage_file files =
   (* Check that all added files exist; raise exception if not *)
@@ -31,6 +34,7 @@ let marshal_from_filenames_to_stage_file files =
         else raise (Failure (file ^ " does not exist"))
   in
 
+  (* TODO: Make this not jank *)
   (* Given a file and list of file_metadata, update the file's metadata if it is
      already in the list; otherwise add its metadata to the list *)
   let rec update_metadata (file : string) (metadata : t) : t =
@@ -66,3 +70,8 @@ let marshal_from_filenames_to_stage_file files =
   Filesystem.marshal_data_to_file [] (Filesystem.Repo.stage_file ());
   let stage = add_file_metadata (get_added_files files) in
   Filesystem.marshal_data_to_file stage (Filesystem.Repo.stage_file ())
+
+(* Get staged files *)
+let get_staged_files () =
+  let metadata = marshal_from_stage_file () in
+  List.map (fun m -> m.name) metadata

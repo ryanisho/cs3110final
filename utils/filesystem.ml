@@ -13,10 +13,13 @@ end
 (* Check that files exist. Raise Failure if not *)
 let rec find_files files =
   match files with
-  | [] -> true
+  | [] -> ()
   | file :: tl ->
-      if Sys.file_exists file then find_files tl
-      else raise (Failure (file ^ "does not exist"))
+      if Sys.file_exists (Repo.root () ^ file) then find_files tl
+      else raise (Failure (file ^ " does not exist"))
+
+(* Wrapper to remove file using repo root *)
+let remove_file file = Sys.remove (Repo.root () ^ file)
 
 let string_of_file file =
   let ic = open_in (Repo.root () ^ file) in
