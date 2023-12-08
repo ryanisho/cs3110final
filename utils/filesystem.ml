@@ -1,13 +1,13 @@
 type filename = string
 
 module Repo = struct
-  let root () = "repo/"
-  let got_dir () = root () ^ ".got/"
-  let stage_file () = got_dir () ^ "stage.msh"
-  let commit_dir () = got_dir () ^ "commits/"
-  let blob_dir () = got_dir () ^ "blobs/"
-  let branch_dir () = got_dir () ^ "branches/"
-  let log_dir () = got_dir () ^ "logs/"
+  let root ?(base_dir = ".") () = base_dir ^ "/repo/"
+  let got_dir ?(base_dir = ".") () = root ~base_dir () ^ ".got/"
+  let stage_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "stage.msh"
+  let commit_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "commits/"
+  let blob_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "blobs/"
+  let branch_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "branches/"
+  let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
 
 (* Check that files exist. Raise Failure if not *)
