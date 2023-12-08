@@ -20,7 +20,7 @@ let marshal_from_stage_file () : t =
     []
 
 (* Serialize the list of metadata, writing to [stage.msh] *)
-let marshal_from_filenames_to_stage_file files =
+let marshal_from_filenames_to_stage_file ?(base_dir = ".") files =
   (* Check that all added files exist; raise exception if not *)
   let rec get_added_files files =
     match files with
@@ -63,6 +63,7 @@ let marshal_from_filenames_to_stage_file files =
     add_file_metadata_helper files (marshal_from_stage_file ())
   in
   (* add_file_metadata requires the file to exist first *)
-  Filesystem.marshal_data_to_file [] (Filesystem.Repo.stage_file ());
+  Filesystem.marshal_data_to_file [] (Filesystem.Repo.stage_file ~base_dir ());
   let stage = add_file_metadata (get_added_files files) in
-  Filesystem.marshal_data_to_file stage (Filesystem.Repo.stage_file ())
+  Filesystem.marshal_data_to_file stage
+    (Filesystem.Repo.stage_file ~base_dir ())

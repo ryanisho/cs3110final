@@ -4,7 +4,7 @@ type t = {
   timestamp : string;
   message : string;
   parent : Filesystem.filename option;
-  changes : (Filesystem.filename * Hash.t) list; 
+  changes : (Filesystem.filename * Hash.t) list;
 }
 
 let retrieve_all_commit_filenames () : Filesystem.filename list =
@@ -22,8 +22,9 @@ let write_commit (stage : Stage.t) (message : string) : string =
       message;
       parent = retrieve_latest_commit_filename ();
       changes =
-        stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
-            (file_metadata.name, file_metadata.hash));
+        stage
+        |> List.map (fun (file_metadata : Stage.file_metadata) ->
+               (file_metadata.name, file_metadata.hash));
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
@@ -40,4 +41,3 @@ let get_full_commit_history () : t list =
   |> List.map fetch_commit
   |> List.sort (fun (c1 : t) (c2 : t) -> compare c2.timestamp c1.timestamp)
   |> List.rev
-
