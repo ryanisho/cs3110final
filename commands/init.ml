@@ -12,5 +12,7 @@ let run : string list -> Command.empty_command =
   else Sys.mkdir got_dir 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.blob_dir ~base_dir ()) 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.commit_dir ~base_dir ()) 0o755;
+  Sys.mkdir (Utils.Filesystem.Repo.branch_dir ~base_dir ()) 0o755;
+  Sys.mkdir (Utils.Filesystem.Repo.log_dir ~base_dir ()) 0o755;
   Utils.Stage.marshal_from_filenames_to_stage_file ~base_dir [];
   fun () -> "Initialized empty repository in " ^ base_dir ^ "."

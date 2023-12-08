@@ -3,9 +3,16 @@ let () =
   let output =
     match args with
     | "add" :: files -> Commands.Add.run files
+    | "rm" :: files -> Commands.Rm.run files
     | "commit" :: args -> Commands.Commit.run args
     | "log" :: _ -> Commands.Log.run ()
     | "init" :: rest -> Commands.Init.run rest ()
+    | "status" :: _ -> failwith "TODO"
+    | "branch" :: _ -> failwith "TODO"
+    | "checkout" :: branch -> failwith "TODO"
+    | "merge" :: branch -> failwith "TODO"
+    | "stash" :: _ -> failwith "TODO"
+    | "diff" :: f -> failwith "TOOD"
     | [] ->
         "========================================================================\n"
         ^ "          ______                  _______               \
