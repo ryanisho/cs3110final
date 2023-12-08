@@ -6,7 +6,17 @@ module Repo = struct
   let stage_file () = got_dir () ^ "stage.msh"
   let commit_dir () = got_dir () ^ "commits/"
   let blob_dir () = got_dir () ^ "blobs/"
+  let branch_dir () = got_dir () ^ "branches/"
+  let log_dir () = got_dir () ^ "logs/"
 end
+
+(* Check that files exist. Raise Failure if not *)
+let rec find_files files =
+  match files with
+  | [] -> true
+  | file :: tl ->
+      if Sys.file_exists file then find_files tl
+      else raise (Failure (file ^ "does not exist"))
 
 let string_of_file file =
   let ic = open_in (Repo.root () ^ file) in
