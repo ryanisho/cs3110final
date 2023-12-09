@@ -10,6 +10,11 @@ module Repo = struct
   let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
 
+let got_repo_exists () = Repo.got_dir () |> Sys.file_exists
+
+let got_initialized () =
+  if got_repo_exists () then () else raise (Failure "not a got repository")
+
 (* Create empty stage *)
 let make_stage () =
   let channel = open_out (Repo.stage_file ()) in

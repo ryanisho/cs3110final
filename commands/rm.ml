@@ -17,6 +17,7 @@ let remove files =
 
 let run : Command.argumented_command =
  fun files ->
+  Utils.Filesystem.got_initialized ();
   let files = is_tracked files in
   match files with
   | [] -> "fatal: No pathspec given. Which files should I remove?"

@@ -14,6 +14,7 @@ let get_untracked () =
 
 let run : Command.empty_command =
  fun () ->
+  Utils.Filesystem.got_initialized ();
   let commited = get_commited () in
   let untracked = get_untracked () in
   match (commited, untracked) with

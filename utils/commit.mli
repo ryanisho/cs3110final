@@ -4,6 +4,7 @@ type t = {
   timestamp : string;
   message : string;
   parent : Filesystem.filename option;
+  merge_parent : Filesystem.filename option;
   changes : (Filesystem.filename * Hash.t) list;
 }
 
