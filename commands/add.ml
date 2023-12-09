@@ -1,7 +1,7 @@
 let run : Command.argumented_command =
  fun files ->
   match files with
-  | [] -> "Nothing specified, nothing added."
+  | [] -> "No file added."
   | _ ->
-      Utils.Stage.marshal_from_filenames_to_stage_file files;
-      "add " ^ String.concat " " files
+      Utils.Stage.add_files_to_stage files;
+      "Added " ^ String.concat " " files

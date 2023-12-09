@@ -65,7 +65,7 @@ let remove_from_stage file =
   remove_from_stage' file metadata
 
 (* Serialize the list of metadata, writing to [stage.msh] *)
-let marshal_from_filenames_to_stage_file ?(base_dir = ".") files =
+let add_files_to_stage ?(base_dir = ".") files =
   let files = Filesystem.find_files files in
   let add_file_metadata files =
     let rec add_file_metadata' files acc =
@@ -76,5 +76,19 @@ let marshal_from_filenames_to_stage_file ?(base_dir = ".") files =
     add_file_metadata' files (marshal_from_stage_file ())
   in
   let stage = add_file_metadata files in
+  Filesystem.marshal_data_to_file stage
+    (Filesystem.Repo.stage_file ~base_dir ())
+
+let remove_files_from_stage ?(base_dir = ".") files =
+  let files = Filesystem.find_files files in
+  let remove_file_metadata files =
+    let rec remove_file_metadata' files acc =
+      match files with
+      | [] -> acc
+      | f :: tl -> remove_file_metadata' tl (update_metadata f acc Delete)
+    in
+    remove_file_metadata' files (marshal_from_stage_file ())
+  in
+  let stage = remove_file_metadata files in
   Filesystem.marshal_data_to_file stage
     (Filesystem.Repo.stage_file ~base_dir ())

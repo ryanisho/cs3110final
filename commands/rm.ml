@@ -1,29 +1,23 @@
-let is_tracked file =
-  let tracked_files = Utils.Stage.get_staged_files () in
-  let rec is_tracked' f staged =
-    match staged with
-    | [] -> false
-    | h :: t -> if h = f then true else is_tracked' f t
+let is_tracked files =
+  let rec is_tracked' files =
+    match files with
+    | [] -> []
+    | f :: tl ->
+        if List.mem f (Utils.Stage.get_tracked_files ()) then
+          f :: is_tracked' tl
+        else raise (Failure ("pathspec " ^ f ^ " does not exist."))
   in
-  is_tracked' file tracked_files
+  is_tracked' files
 
-let rec remove files =
-  match files with
-  | [] -> ()
-  | file :: tl -> (
-      Utils.Filesystem.remove_file file;
-      match is_tracked file with
-      | true ->
-          Utils.Stage.remove_from_stage file;
-          remove tl
-      | false -> raise (Failure ("No reason to remove " ^ file ^ ".")))
+let remove files =
+  Utils.Stage.remove_files_from_stage files;
+  (* This will delete the files fr - uncomment when necssary *)
+  (* Utils.Filesystem.remove_files files; *)
+  List.map (fun s -> "rm " ^ s) files |> String.concat "\n"
 
 let run : Command.argumented_command =
  fun files ->
+  let files = is_tracked files in
   match files with
   | [] -> "fatal: No pathspec given. Which files should I remove?"
-  (* This implementation does not remove the file locally *)
-  | _ ->
-      Utils.Filesystem.find_files files;
-      remove files;
-      String.concat "\n" (List.map (fun file -> "rm " ^ file) files)
+  | _ -> remove files
