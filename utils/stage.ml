@@ -51,19 +51,6 @@ let rec update_metadata (file : string) (metadata : t) (modif : mode) : t =
         };
       ]
 
-(* Denote [file] as removed in [stage.msh] *)
-(* @Ryan fix this path stuff *)
-let remove_from_stage file =
-  let metadata = marshal_from_stage_file () in
-  let rec remove_from_stage' f m =
-    match m with
-    | [] -> raise (Failure ("Unable to remove " ^ f))
-    | h :: t ->
-        if f = h.name then { h with modification = Delete } :: t
-        else remove_from_stage' f t
-  in
-  remove_from_stage' file metadata
-
 (* Serialize the list of metadata, writing to [stage.msh] *)
 let add_files_to_stage ?(base_dir = ".") files =
   let files = Filesystem.find_files files in

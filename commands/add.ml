@@ -1,6 +1,6 @@
 let run : Command.argumented_command =
  fun files ->
-  Utils.Filesystem.got_initialized ();
+  Utils.Filesystem.got_initialized "add";
   match files with
   | [] -> "No file added."
   | _ ->

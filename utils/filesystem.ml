@@ -10,19 +10,23 @@ module Repo = struct
   let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
 
+(* Check if [.got] directory exists in the repo *)
 let got_repo_exists () = Repo.got_dir () |> Sys.file_exists
 
-let got_initialized () =
-  if got_repo_exists () then () else raise (Failure "not a got repository")
+let got_initialized cmd =
+  match (cmd, got_repo_exists ()) with
+  | "init", true ->
+      raise
+        (Failure "A Got version-control system already exists in the directory.")
+  | "init", false -> ()
+  | _, false -> raise (Failure "not a got repository")
+  | _, true -> ()
 
-(* Create empty stage *)
-let make_stage () =
+let make_empty_stage () =
   let channel = open_out (Repo.stage_file ()) in
   output_string channel "";
   close_out channel
 
-(* Raise Failure if files not in repo directory; otherwise it's the identity
-   function *)
 let rec find_files files =
   match files with
   | [] -> []
