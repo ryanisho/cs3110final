@@ -5,6 +5,7 @@ build:
 
 test:
 # remove existing test repository (if exists)
+	dune clean
 	rm -rf repo/.got/	
 # create new got repository for testing
 	dune exec bin/main.exe init
