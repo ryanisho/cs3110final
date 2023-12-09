@@ -1,15 +1,13 @@
 let rec run : Command.argumented_command =
-  fun files ->
-  Utils.Filesystem.got_initialized ();
+ fun files ->
+  Utils.Filesystem.got_initialized "add";
   try
     match files with
     | [] -> "No file added."
     | _ ->
-      Utils.Stage.add_files_to_stage files;
-      "Added " ^ String.concat " " files
-  with
-  | _ ->
+        Utils.Stage.add_files_to_stage files;
+        "Added " ^ String.concat " " files
+  with _ ->
     (* Handle other exceptions *)
-    Unix.sleepf 1.5; 
+    Unix.sleepf 1.5;
     run files
-
