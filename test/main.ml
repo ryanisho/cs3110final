@@ -99,12 +99,15 @@ let log =
           Utils.Commit.clear_commit_history ();
           let log_entry = commit_and_get_log_entry "Initial commit" in
           test_log log_entry () );
-    ( "test log with multiple commits" >:: fun _ ->
+    ( "test log with three commits" >:: fun _ ->
           Utils.Commit.clear_commit_history ();
           let log_entry1 = commit_and_get_log_entry "Initial commit" in
           Unix.sleep 1;
           let log_entry2 = commit_and_get_log_entry "Added new feature" in
-          test_log (log_entry2 ^ "\n" ^ log_entry1) () );
+          Unix.sleep 1;
+          let log_entry3 = commit_and_get_log_entry "Fixed a bug" in
+          test_log (log_entry3 ^ "\n" ^ log_entry2 ^ "\n" ^ log_entry1) ()
+    );
   ]
 
 (* test suite driver *)
