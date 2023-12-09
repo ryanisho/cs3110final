@@ -2,12 +2,12 @@ let () =
   let args = List.tl (Array.to_list Sys.argv) in
   let output =
     match args with
+    | "init" :: rest -> Commands.Init.run rest ()
     | "add" :: files -> Commands.Add.run files
     | "rm" :: files -> Commands.Rm.run files
     | "commit" :: args -> Commands.Commit.run args
     | "log" :: _ -> Commands.Log.run ()
-    | "init" :: rest -> Commands.Init.run rest ()
-    | "status" :: _ -> failwith "TODO"
+    | "status" :: _ -> Commands.Status.run ()
     | "branch" :: _ -> failwith "TODO"
     | "checkout" :: branch -> failwith "TODO"
     | "merge" :: branch -> failwith "TODO"
