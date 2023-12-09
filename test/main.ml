@@ -28,6 +28,19 @@ let test_commit messages expected_message _ =
    let test_init_exists _ = assert_raises (Failure "A Got version-control system
    already exists in the current directory.") (fun () -> Commands.Init.run ());
    () *)
+   
+let test_log expected_log_entries _ =
+  let result = Commands.Log.run () in
+  assert_equal expected_log_entries result ~printer:(fun x -> x)
+
+(* Function to capture timestamp from commit *)
+let commit_and_get_log_entry message =
+  ignore (Commands.Commit.run [ message ]); (* Commit the message *)
+  match Utils.Commit.retrieve_latest_commit_filename () with
+  | Some filename ->
+    let commit = Utils.Commit.fetch_commit filename in
+    "[" ^ commit.timestamp ^ "] " ^ message (* Construct the log entry *)
+  | None -> failwith "No commit found"
 
 let add =
   [
@@ -319,11 +332,32 @@ let commit =
           "Event date changed: 03/15/2023 to April 5th, 2023";
   ]
 
+let log =
+  [
+    ( "test log with no commits" >:: fun _ ->
+          Utils.Commit.clear_commit_history ();
+          let log_entry = commit_and_get_log_entry "" in
+          test_log log_entry () );
+    ( "test log with one commit" >:: fun _ ->
+          Utils.Commit.clear_commit_history ();
+          let log_entry = commit_and_get_log_entry "Initial commit" in
+          test_log log_entry () );
+    ( "test log with three commits" >:: fun _ ->
+          Utils.Commit.clear_commit_history ();
+          let log_entry1 = commit_and_get_log_entry "Initial commit" in
+          Unix.sleep 1;
+          let log_entry2 = commit_and_get_log_entry "Added new feature" in
+          Unix.sleep 1;
+          let log_entry3 = commit_and_get_log_entry "Fixed a bug" in
+          test_log (log_entry3 ^ "\n" ^ log_entry2 ^ "\n" ^ log_entry1) ()
+    );
+  ]
+
 let init =
   [ (* "test init new repository" >:: test_init_new; "test init with existing
        repository" >:: test_init_exists; *) ]
 
 (* test suite driver *)
-let tests = List.flatten [ add; commit ]
+let tests = List.flatten [ add; commit; log ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite
