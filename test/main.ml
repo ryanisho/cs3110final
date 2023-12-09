@@ -11,7 +11,7 @@ let test_commit messages expected_message _ =
   Unix.sleepf 1.5;
   let _ = Commands.Add.run [ "../test/test/docs/apples.txt" ] in
   let result = Commands.Commit.run messages in
-  Printf.printf "Commit result: %s\n" result;
+  (* Printf.printf "Commit result: %s\n" result; *)
   let starts_with_committed = String.sub result 0 9 = "Committed" in
   let contains_message =
     String.contains result ':'
@@ -21,15 +21,20 @@ let test_commit messages expected_message _ =
        = expected_message
   in
   assert_equal true (starts_with_committed && contains_message)
-(* let test_init_new _ = let _ = Unix.system "rm -rf ./repo/.got/" in let result
-   = Commands.Init.run () in assert_equal "Initialized empty repository."
-   result; assert (Sys.file_exists "./repo/.got/"); assert (Sys.file_exists
-   "./repo/.got/blobs/"); assert (Sys.file_exists "./repo/.got/commits/");
-   assert (Sys.file_exists "./repo/.got/stage.msh"); ()
 
-   let test_init_exists _ = assert_raises (Failure "A Got version-control system
-   already exists in the current directory.") (fun () -> Commands.Init.run ());
-   () *)
+let test_init_new _ =
+  let _ = Unix.system "rm -rf ./repo/.got/" in
+  let result = Commands.Init.run [] () in
+  let result = String.sub result 0 28 in
+  assert_equal result "Initialized empty repository";
+  ()
+
+let test_init_exists _ =
+  assert_raises
+    (Failure
+       "A Got version-control system already exists in the directory.") (fun () ->
+        Commands.Init.run [] ());
+  ()
 
 let test_log expected_log_entries _ =
   Unix.sleep 2;
@@ -353,10 +358,12 @@ let log =
   ]
 
 let init =
-  [ (* "test init new repository" >:: test_init_new; "test init with existing
-       repository" >:: test_init_exists; *) ]
+  [
+    "test init new repository" >:: test_init_new;
+    "test init with existing repository" >:: test_init_exists;
+  ]
 
 (* test suite driver *)
-let tests = List.flatten [ log ]
+let tests = List.flatten [ add; commit; init ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite
