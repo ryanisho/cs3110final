@@ -4,6 +4,7 @@ type t = {
   timestamp : string;
   message : string;
   parent : Filesystem.filename option;
+  merge_parent : Filesystem.filename option;
   changes : (Filesystem.filename * Hash.t) list;
 }
 
@@ -21,6 +22,7 @@ let write_commit (stage : Stage.t) (message : string) : string =
       timestamp = string_of_int (int_of_float (Unix.time ()));
       message;
       parent = retrieve_latest_commit_filename ();
+      merge_parent = None;
       changes =
         stage
         |> List.map (fun (file_metadata : Stage.file_metadata) ->
