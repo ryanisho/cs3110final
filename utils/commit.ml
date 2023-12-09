@@ -24,9 +24,9 @@ let write_commit (stage : Stage.t) (message : string) : string =
       parent = retrieve_latest_commit_filename ();
       merge_parent = None;
       changes =
-        stage
-        |> List.map (fun (file_metadata : Stage.file_metadata) ->
-               (file_metadata.name, file_metadata.hash));
+        stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
+            (file_metadata.name, file_metadata.hash));
+
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
@@ -41,5 +41,15 @@ let fetch_commit (timestamp : Filesystem.filename) : t =
 let get_full_commit_history () : t list =
   retrieve_all_commit_filenames ()
   |> List.map fetch_commit
-  |> List.sort (fun (c1 : t) (c2 : t) -> compare c2.timestamp c1.timestamp)
+  |> List.sort (fun (c1 : t) (c2 : t) -> compare c1.timestamp c2.timestamp)
   |> List.rev
+
+let clear_commit_history () =
+  let commit_files = retrieve_all_commit_filenames () in
+  List.iter (fun filename -> 
+      try
+        Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
+      with
+      | Sys_error msg -> print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg)
+    ) commit_files
+
