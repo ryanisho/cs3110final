@@ -26,9 +26,9 @@ let marshal_from_filenames_to_stage_file files =
     match files with
     | [] -> []
     | file :: tl ->
-        if Sys.file_exists (Filesystem.Repo.root () ^ file) then
-          file :: get_added_files tl
-        else raise (Failure (file ^ " does not exist"))
+      if Sys.file_exists (Filesystem.Repo.root () ^ file) then
+        file :: get_added_files tl
+      else raise (Failure (file ^ " does not exist"))
   in
 
   (* Given a file and list of file_metadata, update the file's metadata if it is
@@ -36,22 +36,22 @@ let marshal_from_filenames_to_stage_file files =
   let rec update_metadata (file : string) (metadata : t) : t =
     match metadata with
     | data :: tl ->
-        if data.name = file then
-          {
-            name = file;
-            hash = Hash.hash_file file;
-            contents = Filesystem.string_of_file file;
-          }
-          :: update_metadata file tl
-        else data :: update_metadata file tl
+      if data.name = file then
+        {
+          name = file;
+          hash = Hash.hash_file file;
+          contents = Filesystem.string_of_file file;
+        }
+        :: update_metadata file tl
+      else data :: update_metadata file tl
     | [] ->
-        [
-          {
-            name = file;
-            hash = Hash.hash_file file;
-            contents = Filesystem.string_of_file file;
-          };
-        ]
+      [
+        {
+          name = file;
+          hash = Hash.hash_file file;
+          contents = Filesystem.string_of_file file;
+        };
+      ]
   in
 
   let add_file_metadata files =
