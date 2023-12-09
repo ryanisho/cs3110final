@@ -1,0 +1,9 @@
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  age INTEGER
+);
+
+INSERT INTO users (name, age) VALUES ('John Doe', 25);
+INSERT INTO users (name, age) VALUES ('Jane Smith', 30);
+INSERT INTO users (name, age) VALUES ('Bob Johnson', 40);

@@ -1,5 +1,6 @@
 let run : Command.argumented_command =
  fun args ->
+  Utils.Filesystem.got_initialized ();
   let stage = Utils.Stage.marshal_from_stage_file () in
   (* TEMP FIX: flatten all args into message *)
   (* TODO: fix Makefile to handle "" properly *)

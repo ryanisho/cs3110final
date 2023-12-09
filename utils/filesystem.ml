@@ -1,12 +1,62 @@
 type filename = string
 
 module Repo = struct
-  let root () = "repo/"
-  let got_dir () = root () ^ ".got/"
-  let stage_file () = got_dir () ^ "stage.msh"
-  let commit_dir () = got_dir () ^ "commits/"
-  let blob_dir () = got_dir () ^ "blobs/"
+  let root ?(base_dir = ".") () = base_dir ^ "/repo/"
+  let got_dir ?(base_dir = ".") () = root ~base_dir () ^ ".got/"
+  let stage_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "stage.msh"
+  let commit_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "commits/"
+  let blob_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "blobs/"
+  let branch_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "branches/"
+  let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
+
+let got_repo_exists () = Repo.got_dir () |> Sys.file_exists
+
+let got_initialized () =
+  if got_repo_exists () then () else raise (Failure "not a got repository")
+
+(* Create empty stage *)
+let make_stage () =
+  let channel = open_out (Repo.stage_file ()) in
+  output_string channel "";
+  close_out channel
+
+(* Raise Failure if files not in repo directory; otherwise it's the identity
+   function *)
+let rec find_files files =
+  match files with
+  | [] -> []
+  | file :: tl ->
+      if Sys.file_exists (Repo.root () ^ file) then file :: find_files tl
+      else raise (Failure (file ^ " does not exist."))
+
+let list_files () =
+  let root = Repo.root () in
+  let root_len = String.length root in
+  let rec aux acc dirs =
+    match dirs with
+    | [] -> acc
+    | dir :: tl ->
+        let contents =
+          Sys.readdir dir |> Array.to_list
+          |> List.filter (fun s -> s.[0] <> '.')
+          |> List.map (Filename.concat dir)
+        in
+        let dirs, files = List.partition Sys.is_directory contents in
+        aux (files @ acc) (dirs @ tl)
+  in
+  aux [] [ root ]
+  |> List.map (fun s -> String.sub s root_len (String.length s - root_len))
+  |> List.sort compare
+
+(* Wrapper to remove files using repo root *)
+(* Probably need to fix this pathing *)
+let rec remove_files files : unit =
+  match files with
+  | [] -> ()
+  | file :: tl ->
+      Sys.remove (Repo.root () ^ file);
+      remove_files tl
 
 let string_of_file file =
   let ic = open_in (Repo.root () ^ file) in

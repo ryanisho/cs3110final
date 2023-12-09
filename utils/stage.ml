@@ -1,7 +1,13 @@
+type mode =
+  | Create
+  | Edit
+  | Delete
+
 type file_metadata = {
   name : Filesystem.filename;
   hash : Hash.t;
   contents : string;
+  modification : mode;
 }
 
 (* Accessible externally as Stage.t *)
@@ -15,54 +21,74 @@ let marshal_from_stage_file () : t =
     close_in in_channel;
     metadata
   with End_of_file ->
-    (* print_endline "There was an error while reading the stage file!"; *)
     close_in in_channel;
     []
 
-(* Serialize the list of metadata, writing to [stage.msh] *)
-let marshal_from_filenames_to_stage_file files =
-  (* Check that all added files exist; raise exception if not *)
-  let rec get_added_files files =
-    match files with
-    | [] -> []
-    | file :: tl ->
-      if Sys.file_exists (Filesystem.Repo.root () ^ file) then
-        file :: get_added_files tl
-      else raise (Failure (file ^ " does not exist"))
-  in
+(* Get staged files *)
+let get_tracked_files () =
+  let metadata = marshal_from_stage_file () in
+  List.map (fun m -> m.name) metadata
 
-  (* Given a file and list of file_metadata, update the file's metadata if it is
-     already in the list; otherwise add its metadata to the list *)
-  let rec update_metadata (file : string) (metadata : t) : t =
-    match metadata with
-    | data :: tl ->
+let rec update_metadata (file : string) (metadata : t) (modif : mode) : t =
+  match (metadata, modif) with
+  | data :: tl, _ ->
       if data.name = file then
         {
-          name = file;
+          data with
           hash = Hash.hash_file file;
           contents = Filesystem.string_of_file file;
+          modification = modif;
         }
-        :: update_metadata file tl
-      else data :: update_metadata file tl
-    | [] ->
+        :: tl
+      else data :: update_metadata file tl modif
+  | [], _ ->
       [
         {
           name = file;
           hash = Hash.hash_file file;
           contents = Filesystem.string_of_file file;
+          modification = Create;
         };
       ]
-  in
 
-  let add_file_metadata files =
-    let rec add_file_metadata_helper files metadata =
-      match files with
-      | [] -> metadata
-      | h :: tl -> add_file_metadata_helper tl (update_metadata h metadata)
-    in
-    add_file_metadata_helper files (marshal_from_stage_file ())
+(* Denote [file] as removed in [stage.msh] *)
+(* @Ryan fix this path stuff *)
+let remove_from_stage file =
+  let metadata = marshal_from_stage_file () in
+  let rec remove_from_stage' f m =
+    match m with
+    | [] -> raise (Failure ("Unable to remove " ^ f))
+    | h :: t ->
+        if f = h.name then { h with modification = Delete } :: t
+        else remove_from_stage' f t
   in
-  (* add_file_metadata requires the file to exist first *)
-  Filesystem.marshal_data_to_file [] (Filesystem.Repo.stage_file ());
-  let stage = add_file_metadata (get_added_files files) in
-  Filesystem.marshal_data_to_file stage (Filesystem.Repo.stage_file ())
+  remove_from_stage' file metadata
+
+(* Serialize the list of metadata, writing to [stage.msh] *)
+let add_files_to_stage ?(base_dir = ".") files =
+  let files = Filesystem.find_files files in
+  let add_file_metadata files =
+    let rec add_file_metadata' files acc =
+      match files with
+      | [] -> acc
+      | f :: tl -> add_file_metadata' tl (update_metadata f acc Edit)
+    in
+    add_file_metadata' files (marshal_from_stage_file ())
+  in
+  let stage = add_file_metadata files in
+  Filesystem.marshal_data_to_file stage
+    (Filesystem.Repo.stage_file ~base_dir ())
+
+let remove_files_from_stage ?(base_dir = ".") files =
+  let files = Filesystem.find_files files in
+  let remove_file_metadata files =
+    let rec remove_file_metadata' files acc =
+      match files with
+      | [] -> acc
+      | f :: tl -> remove_file_metadata' tl (update_metadata f acc Delete)
+    in
+    remove_file_metadata' files (marshal_from_stage_file ())
+  in
+  let stage = remove_file_metadata files in
+  Filesystem.marshal_data_to_file stage
+    (Filesystem.Repo.stage_file ~base_dir ())

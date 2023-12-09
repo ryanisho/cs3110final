@@ -1,0 +1,17 @@
+
+// Define variables
+$primary-color: #ff0000;
+$secondary-color: #00ff00;
+
+// Define a mixin
+@mixin button-styles {
+  background-color: $primary-color;
+  color: $secondary-color;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+// Use the mixin to style a button
+.button {
+  @include button-styles;
+}

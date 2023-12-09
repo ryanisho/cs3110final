@@ -4,7 +4,8 @@ type t = {
   timestamp : string;
   message : string;
   parent : Filesystem.filename option;
-  changes : (Filesystem.filename * Hash.t) list; 
+  merge_parent : Filesystem.filename option;
+  changes : (Filesystem.filename * Hash.t) list;
 }
 
 let retrieve_all_commit_filenames () : Filesystem.filename list =
@@ -21,15 +22,17 @@ let write_commit (stage : Stage.t) (message : string) : string =
       timestamp = string_of_int (int_of_float (Unix.time ()));
       message;
       parent = retrieve_latest_commit_filename ();
+      merge_parent = None;
       changes =
         stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
             (file_metadata.name, file_metadata.hash));
+
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
     commit
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
-  Stage.marshal_from_filenames_to_stage_file [];
+  Stage.add_files_to_stage [];
   commit.timestamp
 
 let fetch_commit (timestamp : Filesystem.filename) : t =
@@ -49,3 +52,4 @@ let clear_commit_history () =
       with
       | Sys_error msg -> print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg)
     ) commit_files
+
