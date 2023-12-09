@@ -50,7 +50,6 @@ let proportional_spacing = "\027[26m"
 let no_inverse = "\027[27m"
 let reveal = "\027[28m"
 let no_strikethrough = "\027[29m"
-
 let set_color text color = color ^ text ^ reset
 
 let get_commited () =

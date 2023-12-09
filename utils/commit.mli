@@ -1,0 +1,41 @@
+(* commit.mli *)
+
+open Blob
+open Filesystem
+
+type t = {
+  timestamp : string;
+  message : string;
+  parent : Filesystem.filename option;
+  merge_parent : Filesystem.filename option;
+  changes : (Filesystem.filename * Hash.t) list;
+}
+(** Type representing a commit. *)
+
+(** Retrieves the stage of the commit. *)
+
+val retrieve_all_commit_filenames : unit -> filename list
+(** Retrieves a list of all commit filenames in the repository. *)
+
+val retrieve_latest_commit_filename : unit -> filename option
+(** Retrieves the filename of the latest commit, if any. *)
+
+val write_commit : Stage.t -> string -> string
+(** Writes a new commit with the given stage and message, and returns the
+    timestamp. *)
+
+val fetch_commit : filename -> t
+(** Fetches a commit by its timestamp. *)
+
+val fetch_latest_commit : unit -> t
+(** Fetches the latest commit. *)
+
+val fetch_latest_commit_changes : unit -> (filename * Hash.t) list
+(** Fetches the changes in the latest commit. *)
+
+val get_full_commit_history : unit -> t list
+(** Retrieves the full history of commits, sorted from the most recent to the
+    oldest. *)
+
+val clear_commit_history : unit -> unit
+(** Clears the commit history. *)
