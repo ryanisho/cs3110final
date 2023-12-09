@@ -24,9 +24,9 @@ let write_commit (stage : Stage.t) (message : string) : string =
       parent = retrieve_latest_commit_filename ();
       merge_parent = None;
       changes =
-        stage |> List.map (fun (file_metadata : Stage.file_metadata) ->
-            (file_metadata.name, file_metadata.hash));
-
+        stage
+        |> List.map (fun (file_metadata : Stage.file_metadata) ->
+               (file_metadata.name, file_metadata.hash));
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
@@ -38,6 +38,12 @@ let write_commit (stage : Stage.t) (message : string) : string =
 let fetch_commit (timestamp : Filesystem.filename) : t =
   Filesystem.marshal_file_to_data (Filesystem.Repo.commit_dir () ^ timestamp)
 
+let fetch_latest_commit () =
+  retrieve_latest_commit_filename () |> Option.get |> fetch_commit
+
+let fetch_latest_commit_changes () =
+  fetch_latest_commit () |> fun c -> c.changes
+
 let get_full_commit_history () : t list =
   retrieve_all_commit_filenames ()
   |> List.map fetch_commit
@@ -46,10 +52,9 @@ let get_full_commit_history () : t list =
 
 let clear_commit_history () =
   let commit_files = retrieve_all_commit_filenames () in
-  List.iter (fun filename -> 
-      try
-        Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
-      with
-      | Sys_error msg -> print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg)
-    ) commit_files
-
+  List.iter
+    (fun filename ->
+      try Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
+      with Sys_error msg ->
+        print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg))
+    commit_files
