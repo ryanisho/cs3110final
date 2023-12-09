@@ -30,7 +30,7 @@ let write_commit (stage : Stage.t) (message : string) : string =
   (Filesystem.marshal_data_to_file : t -> string -> unit)
     commit
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
-  Stage.marshal_from_filenames_to_stage_file [];
+  Stage.add_files_to_stage [];
   commit.timestamp
 
 let fetch_commit (timestamp : Filesystem.filename) : t =

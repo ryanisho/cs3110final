@@ -44,9 +44,14 @@ let list_files () =
   |> List.map (fun s -> String.sub s root_len (String.length s - root_len))
   |> List.sort compare
 
-(* Wrapper to remove file using repo root *)
+(* Wrapper to remove files using repo root *)
 (* Probably need to fix this pathing *)
-let remove_file file = Sys.remove (Repo.root () ^ file)
+let rec remove_files files : unit =
+  match files with
+  | [] -> ()
+  | file :: tl ->
+      Sys.remove (Repo.root () ^ file);
+      remove_files tl
 
 let string_of_file file =
   let ic = open_in (Repo.root () ^ file) in
