@@ -14,5 +14,6 @@ let run : string list -> Command.empty_command =
   Sys.mkdir (Utils.Filesystem.Repo.commit_dir ~base_dir ()) 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.branch_dir ~base_dir ()) 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.log_dir ~base_dir ()) 0o755;
-  Utils.Stage.marshal_from_filenames_to_stage_file ~base_dir [];
-  fun () -> "Initialized empty repository in " ^ base_dir ^ "."
+  Utils.Filesystem.make_stage ();
+  fun () -> "Initialized empty repository in " ^ Sys.getcwd () ^ base_dir
+(* May need to fix this pathing *)

@@ -10,15 +10,42 @@ module Repo = struct
   let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
 
-(* Check that files exist. Raise Failure if not *)
+(* Create empty stage *)
+let make_stage () =
+  let channel = open_out (Repo.stage_file ()) in
+  output_string channel "";
+  close_out channel
+
+(* Raise Failure if files not in repo directory; otherwise it's the identity
+   function *)
 let rec find_files files =
   match files with
-  | [] -> ()
+  | [] -> []
   | file :: tl ->
-      if Sys.file_exists (Repo.root () ^ file) then find_files tl
-      else raise (Failure (file ^ " does not exist"))
+      if Sys.file_exists (Repo.root () ^ file) then file :: find_files tl
+      else raise (Failure (file ^ " does not exist."))
+
+let list_files () =
+  let root = Repo.root () in
+  let root_len = String.length root in
+  let rec aux acc dirs =
+    match dirs with
+    | [] -> acc
+    | dir :: tl ->
+        let contents =
+          Sys.readdir dir |> Array.to_list
+          |> List.filter (fun s -> s.[0] <> '.')
+          |> List.map (Filename.concat dir)
+        in
+        let dirs, files = List.partition Sys.is_directory contents in
+        aux (files @ acc) (dirs @ tl)
+  in
+  aux [] [ root ]
+  |> List.map (fun s -> String.sub s root_len (String.length s - root_len))
+  |> List.sort compare
 
 (* Wrapper to remove file using repo root *)
+(* Probably need to fix this pathing *)
 let remove_file file = Sys.remove (Repo.root () ^ file)
 
 let string_of_file file =
