@@ -1,6 +1,6 @@
 let rec run : Command.argumented_command =
   fun args ->
-  Utils.Filesystem.got_initialized ();
+  Utils.Filesystem.got_initialized "commit";
   try
     let stage = Utils.Stage.marshal_from_stage_file () in
     if List.length stage = 0 then
