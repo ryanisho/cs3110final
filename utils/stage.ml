@@ -26,7 +26,10 @@ let marshal_from_stage_file () : t =
 
 (* Get staged files *)
 let get_tracked_files () =
-  let metadata = marshal_from_stage_file () in
+  let staged = marshal_from_stage_file () in
+  (* Fix this *)
+  let committed = [] in
+  let metadata = staged @ committed in
   List.map (fun m -> m.name) metadata
 
 let rec update_metadata (file : string) (metadata : t) (modif : mode) : t =
@@ -64,7 +67,8 @@ let add_files_to_stage ?(base_dir = ".") files =
   in
   let stage = add_file_metadata files in
   Filesystem.marshal_data_to_file stage
-    (Filesystem.Repo.stage_file ~base_dir ())
+    (Filesystem.Repo.stage_file ~base_dir ());
+  Blob.write_blobs files
 
 let remove_files_from_stage ?(base_dir = ".") files =
   let files = Filesystem.find_files files in
