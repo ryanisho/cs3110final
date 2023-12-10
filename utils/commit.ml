@@ -80,7 +80,7 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
   let complete_changes = join_changes stage in
   let commit : t =
     {
-      timestamp = string_of_float (Unix.gettimeofday ());
+      timestamp = string_of_int (int_of_float (Unix.time ()));
       message;
       parent = Some (List.assoc current_branch metadata.branches);
       merge_parent = None;
@@ -106,7 +106,7 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
 let write_initial_commit () : string * string =
   let commit : t =
     {
-      timestamp = string_of_float (Unix.gettimeofday ());
+      timestamp = string_of_int (int_of_float (Unix.time ()));
       message = "Initial commit";
       parent = None;
       merge_parent = None;
