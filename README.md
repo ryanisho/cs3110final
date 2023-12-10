@@ -33,7 +33,7 @@
 
 3. **Removal (`rm`)**: Remove files from the current working directory and the staging area. Usage: `./got rm <file>`
 
-4. **Committing Changes (`commit`)**: Save the staged changes to the project history. Usage: `./got commit <message>`
+4. **Committing Changes (`commit`)**: Save the staged changes to the project history. Usage: `./got commit -m <message>`
 
 5. **Viewing Log (`log`)**: Display a log of all commits made to the repository. Usage: `./got log`
 
@@ -43,7 +43,7 @@
 
 8. **Checkout (`checkout`)**: Switch between different branches. Usage: `./got checkout <branch>` to switch to an existing branch or `./got checkout -b <branch>` to switch to a new branch
 
-9. **Reset (`reset`)**: Reset commit and / or repository history. Usage: `./got reset <timestamp>` to reset commit history or `./got reset --hard <timestamp>` to reset commit and repository history.
+9. **Reset (`reset`)**: Reset commit and / or repository history to a timestamp. Usage: `./got reset <timestamp>` to reset commit history or `./got reset --hard <timestamp>` to reset commit and repository history. You can get timestamps from `./got log`.
 
 10. **Merging (`merge`)**: [Feature in Development] Merge changes from different branches.
 
