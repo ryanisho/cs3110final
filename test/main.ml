@@ -575,7 +575,9 @@ let commit =
           [ "Markdown update: **Bold**, *Italic*, `Code`" ]
           "Markdown update: **Bold**, *Italic*, `Code`";
     "test commit with fictional characters"
-    >:: test_commit [ "Updated character: Frodo Baggins" ];
+    >:: test_commit
+          [ "Updated character: Frodo Baggins" ]
+          "Updated character: Frodo Baggins";
   ]
 
 let log =
