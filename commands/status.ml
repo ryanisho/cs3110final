@@ -5,7 +5,7 @@ let set_color text color = color ^ text ^ reset
 
 let get_commited () =
   let committed =
-    Utils.Stage.get_tracked_files () |> List.map (fun s -> "\t" ^ s)
+    Utils.Stage.get_staged_files () |> List.map (fun s -> "\t" ^ s)
   in
   match committed with
   | [] -> ""
@@ -15,7 +15,7 @@ let get_commited () =
 
 let get_untracked () =
   let files = Utils.Filesystem.list_files () in
-  let tracked = Utils.Stage.get_tracked_files () in
+  let tracked = Utils.Track.get_tracked_files () in
   let untracked =
     List.filter (fun f -> not (List.mem f tracked)) files
     |> List.map (fun s -> "\t" ^ s)

@@ -18,7 +18,7 @@ val marshal_from_stage_file : unit -> t
 
 (* Get tracked files. We combine results from the staging area with that of the
    previous commit (if applicable) *)
-val get_tracked_files : unit -> string list
+val get_staged_files : unit -> string list
 
 (* Update a file's metadata with name and mode, updating contents and hash as
    well. If it is not in the present metadata, insert it into the metadata
