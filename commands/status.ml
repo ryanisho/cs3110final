@@ -59,8 +59,8 @@ let get_commited () =
   match committed with
   | [] -> ""
   | _ ->
-    "Changes to be committed: \n"
-    ^ set_color (String.concat "\n" committed) green
+      "Changes to be committed: \n"
+      ^ set_color (String.concat "\n" committed) green
 
 let get_untracked () =
   let files = Utils.Filesystem.list_files () in
@@ -74,7 +74,7 @@ let get_untracked () =
   | _ -> "Untracked files: \n" ^ set_color (String.concat "\n" untracked) red
 
 let run : Command.empty_command =
-  fun () ->
+ fun () ->
   Utils.Filesystem.got_initialized "status";
   let commited = get_commited () in
   let untracked = get_untracked () in
