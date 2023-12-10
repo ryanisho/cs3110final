@@ -1,3 +1,43 @@
+(* Testing Plan:
+
+   1. Automated Testing with OUnit: - Modules Tested: `Add`, `Commit`, `Log` -
+   Test Case Development: Black box testing was primarily used. We considered
+   the expected behavior of the functions without looking at their
+   implementation. - `Add` Module: We test the `run` function with a list of
+   files. We expect the function to return a string that indicates the files
+   were added. We test with different types of files (text files, binary files,
+   etc.) and different numbers of files (no files, one file, multiple files). -
+   `Commit` Module: We test the `run` function with a list of messages. We
+   expect the function to return a string that starts with "Committed" and
+   contains the commit message. We test with different types of messages (empty
+   string, one word, multiple words, special characters). - `Log` Module: We
+   test the `run` function with no arguments. We expect the function to return a
+   string that contains the commit log. We test with different states of the
+   commit log (no commits, one commit, multiple commits).
+
+   2. Manual Testing: - Modules Tested: `Branch`, `Checkout`, `Rm`, `Reset`,
+   `Status` - `Branch` Module: We manually tested this module by creating new
+   branches, switching between branches, and checking the state of the
+   filesystem and the output of the `Branch.run` function. - `Checkout` Module:
+   We manually tested this module by checking out different branches and
+   commits, and checking the state of the filesystem and the output of the
+   `Checkout.run` function. - `Rm` Module: We manually tested this module by
+   removing different files and directories, and checking the state of the
+   filesystem and the output of the `Rm.run` function. - `Reset` Module: We
+   manually tested this module by resetting the repository to different states,
+   and checking the state of the filesystem and the output of the `Reset.run`
+   function. - `Status` Module: Some parts of this module required manual
+   testing because they involve a change in color. We manually tested these
+   parts by running the `Status.run` function and visually inspecting the
+   output.
+
+   This testing approach demonstrates the correctness of the system because it
+   covers all the major functionality of the system. The automated tests ensure
+   that the `Add`, `Commit`, and `Log` functions work as expected for a variety
+   of inputs, and the manual tests ensure that the functions that interact with
+   the filesystem and the terminal (`Branch`, `Checkout`, `Rm`, `Reset`,
+   `Status`) work correctly. By covering all these areas, we can be confident
+   that the system works as intended. *)
 open OUnit2
 open Commands
 
