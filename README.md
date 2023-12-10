@@ -55,6 +55,19 @@
 
 ---
 
+## A Basic Workflow Using Got: 
+
+```bash
+./got init
+echo "bar" > repo/foo.txt
+./got add foo.txt
+./got commit -m "Create foo"
+echo "buzz" > repo/fizz.txt
+./got add fizz.txt
+./got commit -m "Create fizz"
+./got rm fizz.txt
+./got commit -m "Remove fizz" 
+
 ## Authors of 'got'
 
 1. **Bryant Park (blp73)**
