@@ -55,7 +55,7 @@
 
 ---
 
-## A Basic Workflow Using Got: 
+## A Basic Workflow Using 'got': 
 
 ```bash
 ./got init
