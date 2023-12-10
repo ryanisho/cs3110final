@@ -5,7 +5,7 @@ let rec run : Command.empty_command =
  fun () ->
   try
     Utils.Filesystem.got_initialized "log";
-    let commit_history = Utils.Commit.get_full_commit_history () in
+    let commit_history = Utils.Commit.get_commit_history_from_head () in
     let output =
       commit_history |> List.map commit_to_log_entry |> List.fold_left ( ^ ) ""
     in

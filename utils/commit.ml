@@ -8,11 +8,6 @@ type t = {
   changes : (Filesystem.filename * Hash.t * Stage.mode) list;
 }
 
-(* TODO: fetch recursive walk *)
-let retrieve_all_commit_filenames () : Filesystem.filename list =
-  Filesystem.Repo.commit_dir ()
-  |> Sys.readdir |> Array.to_list |> List.sort compare
-
 let retrieve_head_commit_filename () : Filesystem.filename option =
   let metadata = Repo_metadata.read_from_file () in
   List.assoc_opt metadata.head metadata.branches
@@ -20,23 +15,23 @@ let retrieve_head_commit_filename () : Filesystem.filename option =
 let fetch_commit (timestamp : Filesystem.filename) : t =
   Filesystem.marshal_file_to_data (Filesystem.Repo.commit_dir () ^ timestamp)
 
-let fetch_latest_commit () =
+let fetch_head_commit () =
   let commit_name = retrieve_head_commit_filename () in
   match commit_name with
   | Some c -> Some (fetch_commit c)
   | None -> None
 
-let fetch_latest_commit_changes () =
-  let commit = fetch_latest_commit () in
+let fetch_head_commit_changes () =
+  let commit = fetch_head_commit () in
   match commit with
   | None -> []
   | Some c -> c.changes
 
-let fetch_latest_commit_files () =
-  fetch_latest_commit_changes () |> List.map (fun (name, hash, mode) -> name)
+let fetch_head_commit_files () =
+  fetch_head_commit_changes () |> List.map (fun (name, hash, mode) -> name)
 
 let join_changes stage =
-  let prev_changes = fetch_latest_commit_changes () in
+  let prev_changes = fetch_head_commit_changes () in
   let curr_changes =
     List.map
       (fun (file_metadata : Stage.file_metadata) ->
@@ -120,11 +115,20 @@ let write_initial_commit () : string * string =
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
   (commit.timestamp, [] |> list_changes)
 
-let get_full_commit_history () : t list =
-  retrieve_all_commit_filenames ()
-  |> List.map fetch_commit
-  |> List.sort (fun (c1 : t) (c2 : t) -> compare c1.timestamp c2.timestamp)
-  |> List.rev
+let get_commit_history_from_head () : t list =
+  let rec helper (child_timestamp : Filesystem.filename) =
+    let child_commit = fetch_commit child_timestamp in
+    match child_commit.parent with
+    | None -> [ child_commit ]
+    | Some parent_timestamp -> child_commit :: helper parent_timestamp
+  in
+  match retrieve_head_commit_filename () with
+  | None -> []
+  | Some head_commit_filename -> helper head_commit_filename
+
+let retrieve_all_commit_filenames () : Filesystem.filename list =
+  Filesystem.Repo.commit_dir ()
+  |> Sys.readdir |> Array.to_list |> List.sort compare
 
 let clear_commit_history () =
   let commit_files = retrieve_all_commit_filenames () in
