@@ -75,12 +75,14 @@ let list_changes changes =
   |> String.concat "\n"
 
 let write_commit (stage : Stage.t) (message : string) : string * string =
+  let metadata = Repo_metadata.read_from_file () in
+  let current_branch = metadata.head in
   let complete_changes = join_changes stage in
   let commit : t =
     {
       timestamp = string_of_float (Unix.gettimeofday ());
       message;
-      parent = retrieve_latest_commit_filename ();
+      parent = Some (List.assoc current_branch metadata.branches);
       merge_parent = None;
       changes = complete_changes |> remove_deleted_files;
     }
@@ -89,7 +91,32 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
     commit
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
   Filesystem.make_empty_stage ();
+  (* Update metadata *)
+  let metadata : Repo_metadata.t =
+    {
+      head = current_branch;
+      branches =
+        (current_branch, commit.timestamp)
+        :: List.remove_assoc current_branch metadata.branches;
+    }
+  in
+  Repo_metadata.write_to_file metadata;
   (commit.timestamp, complete_changes |> list_changes)
+
+let write_initial_commit () : string * string =
+  let commit : t =
+    {
+      timestamp = string_of_float (Unix.gettimeofday ());
+      message = "Initial commit";
+      parent = None;
+      merge_parent = None;
+      changes = [];
+    }
+  in
+  (Filesystem.marshal_data_to_file : t -> string -> unit)
+    commit
+    (Filesystem.Repo.commit_dir () ^ commit.timestamp);
+  (commit.timestamp, [] |> list_changes)
 
 let get_full_commit_history () : t list =
   retrieve_all_commit_filenames ()
