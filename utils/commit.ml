@@ -138,3 +138,5 @@ let clear_commit_history () =
       with Sys_error msg ->
         print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg))
     commit_files
+
+let restore_working_dir_to (timestamp : Filesystem.filename) : unit = ()
