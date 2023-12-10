@@ -5,8 +5,8 @@ type mode =
   | Create
   | Edit
   | Delete
-  (** Define the mode type which represents the type of modification made to
-      a file. *)
+      (** Define the mode type which represents the type of modification made to
+          a file. *)
 
 type file_metadata = {
   name : Filesystem.filename;
@@ -26,9 +26,10 @@ val get_staged_files : unit -> string list
 (** Get tracked files. We combine results from the staging area with that of the
     previous commit (if applicable) *)
 
-val update_metadata : string -> t -> mode -> t
-(** Update a file's metadata with name and mode, updating contents and hash as
-    well. If it is not in the present metadata, insert it into the metadata list *)
+(* Update a file's metadata with name and mode, updating contents and hash as
+   well. If it is not in the present metadata, insert it into the metadata
+   list *)
+val update_metadata : string -> t -> t
 
 val add_files_to_stage : ?base_dir:string -> string list -> unit
 (** Add files to stage *)

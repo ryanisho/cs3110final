@@ -1,9 +1,10 @@
-(** [got]'s version control Filesystem that allows users to track changes to
-    files in a directory. *)
+exception File_not_found of string
+exception Got_initialized of string
+
+type filename = string
 
 type filename = string
 (** Types for [got] objects *)
-
 
 (** Paths for [got] directories and files *)
 module Repo : sig

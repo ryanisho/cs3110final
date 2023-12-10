@@ -1,23 +1,30 @@
-let is_tracked files =
-  let rec is_tracked' files =
+let check_tracked files =
+  let rec check_tracked' files =
     match files with
-    | [] -> []
+    | [] -> ()
     | f :: tl ->
-        if List.mem f (Utils.Stage.get_staged_files ()) then f :: is_tracked' tl
+        if List.mem f (Utils.Track.get_tracked_files ()) then check_tracked' tl
         else raise (Failure ("pathspec " ^ f ^ " does not exist."))
   in
-  is_tracked' files
+  check_tracked' files
 
 let remove files =
-  Utils.Stage.remove_files_from_stage files;
-  (* This will delete the files fr - uncomment when necssary *)
   (* Utils.Filesystem.remove_files files; *)
+  Utils.Stage.remove_files_from_stage files;
   List.map (fun s -> "rm " ^ s) files |> String.concat "\n"
 
-let run : Command.argumented_command =
+let rec run : Command.argumented_command =
  fun files ->
-  Utils.Filesystem.got_initialized "rm";
-  let files = is_tracked files in
-  match files with
-  | [] -> "fatal: No pathspec given. Which files should I remove?"
-  | _ -> remove files
+  try
+    Utils.Filesystem.got_initialized "rm";
+    check_tracked files;
+    match files with
+    | [] -> "fatal: No pathspec given. Which files should I remove?"
+    | _ -> remove files
+  with
+  | Utils.Filesystem.File_not_found msg -> msg
+  | Utils.Filesystem.Got_initialized msg -> msg
+  | _ ->
+      (* Handle other exceptions *)
+      Unix.sleepf 1.5;
+      run files

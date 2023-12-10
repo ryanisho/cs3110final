@@ -73,14 +73,21 @@ let get_untracked () =
   | [] -> ""
   | _ -> "Untracked files: \n" ^ set_color (String.concat "\n" untracked) red
 
-let run : Command.empty_command =
+let rec run : Command.empty_command =
  fun () ->
-  Utils.Filesystem.got_initialized "status";
-  let commited = get_commited () in
-  let untracked = get_untracked () in
-  (* print_endline ("HI" ^ commited ^ untracked ^ "DONE") *)
-  match (commited, untracked) with
-  | "", "" -> "nothing to be committed, working tree clean"
-  | c, "" -> c
-  | "", u -> u
-  | c, u -> c ^ "\n" ^ u
+  try
+    Utils.Filesystem.got_initialized "status";
+    let commited = get_commited () in
+    let untracked = get_untracked () in
+    (* print_endline ("HI" ^ commited ^ untracked ^ "DONE") *)
+    match (commited, untracked) with
+    | "", "" -> "nothing to be committed, working tree clean"
+    | c, "" -> c
+    | "", u -> u
+    | c, u -> c ^ "\n" ^ u
+  with
+  | Utils.Filesystem.Got_initialized msg -> msg
+  | _ ->
+      (* Handle other exceptions *)
+      Unix.sleepf 1.5;
+      run ()
