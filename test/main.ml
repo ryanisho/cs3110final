@@ -1,5 +1,6 @@
 open OUnit2
 open Commands
+open Status
 
 exception Got_initialized of string
 
@@ -733,7 +734,14 @@ let init =
     "test init with existing repository" >:: test_init_exists;
   ]
 
+let test_status_empty _ =
+  let expected = "nothing to be committed, working tree clean" in
+  let actual = run () in
+  assert_equal expected actual ~printer:(fun s -> s)
+
+let status = [ "test_status_empty" >:: test_status_empty ]
+
 (* test suite driver *)
-let tests = List.flatten [ log; add; commit; init ]
+let tests = List.flatten [ log; add; commit; init; status ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite
