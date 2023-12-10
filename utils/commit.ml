@@ -8,18 +8,20 @@ type t = {
   changes : (Filesystem.filename * Hash.t * Stage.mode) list;
 }
 
+(* TODO: fetch recursive walk *)
 let retrieve_all_commit_filenames () : Filesystem.filename list =
   Filesystem.Repo.commit_dir ()
   |> Sys.readdir |> Array.to_list |> List.sort compare
 
-let retrieve_latest_commit_filename () : Filesystem.filename option =
-  List.nth_opt (List.rev (retrieve_all_commit_filenames ())) 0
+let retrieve_head_commit_filename () : Filesystem.filename option =
+  let metadata = Repo_metadata.read_from_file () in
+  List.assoc_opt metadata.head metadata.branches
 
 let fetch_commit (timestamp : Filesystem.filename) : t =
   Filesystem.marshal_file_to_data (Filesystem.Repo.commit_dir () ^ timestamp)
 
 let fetch_latest_commit () =
-  let commit_name = retrieve_latest_commit_filename () in
+  let commit_name = retrieve_head_commit_filename () in
   match commit_name with
   | Some c -> Some (fetch_commit c)
   | None -> None

@@ -23,7 +23,7 @@ val join_changes :
 val retrieve_all_commit_filenames : unit -> filename list
 (** Retrieves a list of all commit filenames in the repository. *)
 
-val retrieve_latest_commit_filename : unit -> filename option
+val retrieve_head_commit_filename : unit -> filename option
 (** Retrieves the filename of the latest commit, if any. *)
 
 val write_commit : Stage.t -> string -> string * string

@@ -46,7 +46,7 @@ let test_log expected_log_entries _ =
 let commit_and_get_log_entry message =
   let _ = Commands.Add.run [ "../test/test/docs/apples.txt" ] in
   let _ = Commands.Commit.run [ message ] in
-  match Utils.Commit.retrieve_latest_commit_filename () with
+  match Utils.Commit.retrieve_head_commit_filename () with
   | Some filename ->
       let commit = Utils.Commit.fetch_commit filename in
       "[" ^ commit.timestamp ^ "] " ^ message (* Construct the log entry *)
