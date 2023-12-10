@@ -10,7 +10,7 @@ let () =
     | "status" :: _ -> Commands.Status.run ()
     | "reset" :: args -> Commands.Reset.run args
     | "branch" :: _ -> failwith "TODO"
-    | "checkout" :: branch -> failwith "TODO"
+    | "checkout" :: args -> Commands.Checkout.run args
     | "merge" :: branch -> failwith "TODO"
     | "stash" :: _ -> failwith "TODO"
     | "diff" :: f -> failwith "TOOD"
@@ -57,7 +57,9 @@ let () =
         ^ "        \\::/____/                 \
            ~~                                   \n"
         ^ "=========================================================================\n"
-        ^ "Usage: got [init <path> | add <file> | commit <message> | log]"
+        ^ "Usage: got [init <path> | add <file> | commit -m <message> | log | \
+           reset [--hard] <commit> | checkout [-b] <branch>] | branch [-D \
+           <branch>]"
     | _ -> "Command not supported!"
   in
   print_endline output
