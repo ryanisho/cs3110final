@@ -1,7 +1,7 @@
 let rec run : Command.argumented_command =
  fun files ->
-  Utils.Filesystem.got_initialized "add";
   try
+    Utils.Filesystem.got_initialized "add";
     match files with
     | [] -> "No file added."
     | _ ->

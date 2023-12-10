@@ -23,7 +23,7 @@ val get_staged_files : unit -> string list
 (* Update a file's metadata with name and mode, updating contents and hash as
    well. If it is not in the present metadata, insert it into the metadata
    list *)
-val update_metadata : string -> t -> mode -> t
+val update_metadata : string -> t -> t
 
 (* Add files to stage *)
 val add_files_to_stage : ?base_dir:string -> string list -> unit
