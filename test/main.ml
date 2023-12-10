@@ -45,7 +45,7 @@ let test_log messages ctxt =
       Unix.sleepf 0.5;
       ignore (Commands.Add.run [ "../test/test/docs/apples.txt" ]);
       Unix.sleepf 0.5;
-      ignore (Commands.Commit.run [ message ]);
+      ignore (Commands.Commit.run [ "-m"; message ]);
       commit_and_add_messages rest
   in
   commit_and_add_messages messages;
