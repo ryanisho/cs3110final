@@ -55,6 +55,23 @@ let join_changes stage =
       else (file, hash, mode) :: acc)
     prev_changes curr_changes
 
+let get_curr_changes stage =
+  let prev_changes = fetch_head_commit_changes () in
+  let curr_changes =
+    List.map
+      (fun (file_metadata : Stage.file_metadata) ->
+        (file_metadata.name, file_metadata.hash, file_metadata.modification))
+      stage
+  in
+  let created_prev file =
+    List.exists (fun (f, _, _) -> f = file) prev_changes
+  in
+  List.map
+    (fun (file, hash, mode) ->
+      if created_prev file && mode = Stage.Create then (file, hash, Stage.Edit)
+      else (file, hash, mode))
+    curr_changes
+
 let remove_deleted_files changes : (string * string * Stage.mode) list =
   List.filter (fun (_, _, mode) -> mode <> Stage.Delete) changes
 
@@ -75,6 +92,7 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
   let metadata = Repo_metadata.read_from_file () in
   let current_branch = metadata.head in
   let complete_changes = join_changes stage in
+  let curr_changes = get_curr_changes stage in
   let commit : t =
     {
       timestamp = string_of_int (int_of_float (Unix.time ()));
@@ -98,7 +116,7 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
     }
   in
   Repo_metadata.write_to_file metadata;
-  (commit.timestamp, complete_changes |> list_changes)
+  (commit.timestamp, curr_changes |> list_changes)
 
 let write_initial_commit () : string * string =
   let commit : t =
