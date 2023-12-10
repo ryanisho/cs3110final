@@ -1,3 +1,6 @@
+exception File_not_found of string
+exception Got_initialized of string
+
 type filename = string
 
 (* Paths for got directories and files *)

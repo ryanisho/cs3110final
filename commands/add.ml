@@ -7,7 +7,10 @@ let rec run : Command.argumented_command =
     | _ ->
         Utils.Stage.add_files_to_stage files;
         "Added " ^ String.concat " " files
-  with _ ->
-    (* Handle other exceptions *)
-    Unix.sleepf 1.5;
-    run files
+  with
+  | Utils.Filesystem.File_not_found msg -> msg
+  | Utils.Filesystem.Got_initialized msg -> msg
+  | _ ->
+      (* Handle other exceptions *)
+      Unix.sleepf 1.5;
+      run files

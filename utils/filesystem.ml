@@ -1,3 +1,6 @@
+exception File_not_found of string
+exception Got_initialized of string
+
 type filename = string
 
 module Repo = struct
@@ -17,9 +20,10 @@ let got_initialized cmd =
   match (cmd, got_repo_exists ()) with
   | "init", true ->
       raise
-        (Failure "A Got version-control system already exists in the directory.")
+        (Got_initialized
+           "A Got version-control system already exists in the directory.")
   | "init", false -> ()
-  | _, false -> raise (Failure "not a got repository")
+  | _, false -> raise (Got_initialized "not a got repository")
   | _, true -> ()
 
 let make_empty_stage () =
@@ -32,7 +36,7 @@ let rec find_files files =
   | [] -> []
   | file :: tl ->
       if Sys.file_exists (Repo.root () ^ file) then file :: find_files tl
-      else raise (Failure (file ^ " does not exist."))
+      else raise (File_not_found (file ^ " does not exist."))
 
 let list_files () =
   let root = Repo.root () in
