@@ -3,7 +3,6 @@ exception Got_initialized of string
 
 type filename = string
 
-type filename = string
 (** Types for [got] objects *)
 
 (** Paths for [got] directories and files *)
