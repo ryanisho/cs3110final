@@ -9,7 +9,7 @@ let () =
     | "log" :: _ -> Commands.Log.run ()
     | "status" :: _ -> Commands.Status.run ()
     | "reset" :: args -> Commands.Reset.run args
-    | "branch" :: _ -> failwith "TODO"
+    | "branch" :: args -> Commands.Branch.run args
     | "checkout" :: args -> Commands.Checkout.run args
     | "merge" :: branch -> failwith "TODO"
     | "stash" :: _ -> failwith "TODO"
