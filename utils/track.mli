@@ -1,4 +1,5 @@
-(** [track] is an interface for the module containing tracking and untracking of files *)
+(** [track] is an interface for the module containing tracking and untracking of
+    files *)
 
 val get_tracked_files : unit -> string list
 (** [get_tracked_files] returns a list of files that are either staged or
