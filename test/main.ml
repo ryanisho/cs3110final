@@ -37,13 +37,11 @@ let test_init_exists _ =
   ()
 
 let test_log expected_log_entries _ =
-  Unix.sleep 2;
   let result = Commands.Log.run () in
   assert_equal expected_log_entries result ~printer:(fun x -> x)
 
 (* Function to capture timestamp from commit *)
 let commit_and_get_log_entry message =
-  Unix.sleep 2;
   let _ = Commands.Add.run [ "../test/test/docs/apples.txt" ] in
   let _ = Commands.Commit.run [ message ] in
   match Utils.Commit.retrieve_latest_commit_filename () with
@@ -345,16 +343,151 @@ let commit =
 
 let log =
   [
-    ( "test log with one commit" >:: fun _ ->
+    ( "test log with many commits" >:: fun _ ->
           Utils.Commit.clear_commit_history ();
-          let log_entry = commit_and_get_log_entry "Initial commit" in
-          test_log log_entry () );
-    ( "test log with three commits" >:: fun _ ->
-          Utils.Commit.clear_commit_history ();
-          let log_entry1 = commit_and_get_log_entry "Initial commit" in
-          let log_entry2 = commit_and_get_log_entry "Added new feature" in
-          let log_entry3 = commit_and_get_log_entry "Fixed a bug" in
-          test_log (log_entry3 ^ "\n" ^ log_entry2 ^ "\n" ^ log_entry1) () );
+          let log_entry1 = commit_and_get_log_entry "Commit 1" in
+          Unix.sleepf 0.01;
+          let log_entry2 = commit_and_get_log_entry "Commit 2" in
+          Unix.sleepf 0.01;
+          let log_entry3 = commit_and_get_log_entry "Commit 3" in
+          Unix.sleepf 0.01;
+          let log_entry4 = commit_and_get_log_entry "Commit 4" in
+          Unix.sleepf 0.01;
+          let log_entry5 = commit_and_get_log_entry "Commit 5" in
+          Unix.sleepf 0.01;
+          let log_entry6 = commit_and_get_log_entry "Commit 6" in
+          Unix.sleepf 0.01;
+          let log_entry7 = commit_and_get_log_entry "Commit 7" in
+          Unix.sleepf 0.01;
+          let log_entry8 = commit_and_get_log_entry "Commit 8" in
+          Unix.sleepf 0.01;
+          let log_entry9 = commit_and_get_log_entry "Commit 9" in
+          Unix.sleepf 0.01;
+          let log_entry10 = commit_and_get_log_entry "Commit 10" in
+          Unix.sleepf 0.01;
+          let log_entry11 = commit_and_get_log_entry "Commit 11" in
+          Unix.sleepf 0.01;
+          let log_entry12 = commit_and_get_log_entry "Commit 12" in
+          Unix.sleepf 0.01;
+          let log_entry13 = commit_and_get_log_entry "Commit 13" in
+          Unix.sleepf 0.01;
+          let log_entry14 = commit_and_get_log_entry "Commit 14" in
+          Unix.sleepf 0.01;
+          let log_entry15 = commit_and_get_log_entry "Commit 15" in
+          Unix.sleepf 0.01;
+          let log_entry16 = commit_and_get_log_entry "Commit 16" in
+          Unix.sleepf 0.01;
+          let log_entry17 = commit_and_get_log_entry "Commit 17" in
+          Unix.sleepf 0.01;
+          let log_entry18 = commit_and_get_log_entry "Commit 18" in
+          Unix.sleepf 0.01;
+          let log_entry19 = commit_and_get_log_entry "Commit 19" in
+          Unix.sleepf 0.01;
+          let log_entry20 = commit_and_get_log_entry "Commit 20" in
+          Unix.sleepf 0.01;
+          let log_entry21 = commit_and_get_log_entry "Commit 21" in
+          Unix.sleepf 0.01;
+          let log_entry22 = commit_and_get_log_entry "Commit 22" in
+          Unix.sleepf 0.01;
+          let log_entry23 = commit_and_get_log_entry "Commit 23" in
+          Unix.sleepf 0.01;
+          let log_entry24 = commit_and_get_log_entry "Commit 24" in
+          Unix.sleepf 0.01;
+          let log_entry25 = commit_and_get_log_entry "Commit 25" in
+          Unix.sleepf 0.01;
+          let log_entry26 = commit_and_get_log_entry "Commit 26" in
+          Unix.sleepf 0.01;
+          let log_entry27 = commit_and_get_log_entry "Commit 27" in
+          Unix.sleepf 0.01;
+          let log_entry28 = commit_and_get_log_entry "Commit 28" in
+          Unix.sleepf 0.01;
+          let log_entry29 = commit_and_get_log_entry "Commit 29" in
+          Unix.sleepf 0.01;
+          let log_entry30 = commit_and_get_log_entry "Commit 30" in
+          Unix.sleepf 0.01;
+          let log_entry31 = commit_and_get_log_entry "Commit 31" in
+          Unix.sleepf 0.01;
+          let log_entry32 = commit_and_get_log_entry "Commit 32" in
+          Unix.sleepf 0.01;
+          let log_entry33 = commit_and_get_log_entry "Commit 33" in
+          Unix.sleepf 0.01;
+          let log_entry34 = commit_and_get_log_entry "Commit 34" in
+          Unix.sleepf 0.01;
+          let log_entry35 = commit_and_get_log_entry "Commit 35" in
+          Unix.sleepf 0.01;
+          let log_entry36 = commit_and_get_log_entry "Commit 36" in
+          Unix.sleepf 0.01;
+          let log_entry37 = commit_and_get_log_entry "Commit 37" in
+          Unix.sleepf 0.01;
+          let log_entry38 = commit_and_get_log_entry "Commit 38" in
+          Unix.sleepf 0.01;
+          let log_entry39 = commit_and_get_log_entry "Commit 39" in
+          Unix.sleepf 0.01;
+          let log_entry40 = commit_and_get_log_entry "Commit 40" in
+          Unix.sleepf 0.01;
+          let log_entry41 = commit_and_get_log_entry "Commit 41" in 
+          Unix.sleepf 0.01;
+          let log_entry42 = commit_and_get_log_entry "Commit 42" in
+          Unix.sleepf 0.01;
+          let log_entry43 = commit_and_get_log_entry "Commit 43" in
+          Unix.sleepf 0.01;
+          let log_entry44 = commit_and_get_log_entry "Commit 44" in
+          Unix.sleepf 0.01;
+          let log_entry45 = commit_and_get_log_entry "Commit 45" in
+          Unix.sleepf 0.01;
+          let log_entry46 = commit_and_get_log_entry "Commit 46" in
+          Unix.sleepf 0.01;
+          let log_entry47 = commit_and_get_log_entry "Commit 47" in
+          Unix.sleepf 0.01;
+          let log_entry48 = commit_and_get_log_entry "Commit 48" in
+          Unix.sleepf 0.01;
+          let log_entry49 = commit_and_get_log_entry "Commit 49" in
+          Unix.sleepf 0.01;
+          let log_entry50 = commit_and_get_log_entry "Commit 50" in
+          Unix.sleepf 0.01;
+          let log_entry51 = commit_and_get_log_entry "Commit 51" in
+          Unix.sleepf 0.01;
+          let log_entry52 = commit_and_get_log_entry "Commit 52" in
+          Unix.sleepf 0.01;
+          let log_entry53 = commit_and_get_log_entry "Commit 53" in
+          Unix.sleepf 0.01;
+          let log_entry54 = commit_and_get_log_entry "Commit 54" in
+          Unix.sleepf 0.01;
+          let log_entry55 = commit_and_get_log_entry "Commit 55" in
+          Unix.sleepf 0.01;
+          let log_entry56 = commit_and_get_log_entry "Commit 56" in
+          Unix.sleepf 0.01;
+          let log_entry57 = commit_and_get_log_entry "Commit 57" in
+          Unix.sleepf 0.01;
+          let log_entry58 = commit_and_get_log_entry "Commit 58" in
+          Unix.sleepf 0.01;
+          let log_entry59 = commit_and_get_log_entry "Commit 59" in
+          Unix.sleepf 0.01;
+          let log_entry60 = commit_and_get_log_entry "Commit 60" in
+          test_log (log_entry60 ^ "\n" ^ log_entry59 ^ "\n" ^ log_entry58 
+                    ^ "\n" ^ log_entry57 ^ "\n" ^ log_entry56 ^ "\n" ^ 
+                    log_entry55 ^ "\n" ^ log_entry54 ^ "\n" ^ log_entry53 
+                    ^ "\n" ^ log_entry52 ^ "\n" ^ log_entry51 ^ "\n" ^ 
+                    log_entry50 ^ "\n" ^ log_entry49 ^ "\n" ^ log_entry48 
+                    ^ "\n" ^ log_entry47 ^ "\n" ^ log_entry46 ^ "\n" ^ 
+                    log_entry45 ^ "\n" ^ log_entry44 ^ "\n" ^ log_entry43 
+                    ^ "\n" ^ log_entry42 ^ "\n" ^ log_entry41 ^ "\n" ^ 
+                    log_entry40 ^ "\n" ^ log_entry39 ^ "\n" ^ log_entry38 
+                    ^ "\n" ^ log_entry37 ^ "\n" ^ log_entry36 ^ "\n" ^ 
+                    log_entry35 ^ "\n" ^ log_entry34 ^ "\n" ^ log_entry33 
+                    ^ "\n" ^ log_entry32 ^ "\n" ^ log_entry31 ^ "\n" ^ 
+                    log_entry30 ^ "\n" ^ log_entry29 ^ "\n" ^ log_entry28 
+                    ^ "\n" ^ log_entry27 ^ "\n" ^ log_entry26 ^ "\n" ^ 
+                    log_entry25 ^ "\n" ^ log_entry24 ^ "\n" ^ log_entry23 
+                    ^ "\n" ^ log_entry22 ^ "\n" ^ log_entry21 ^ "\n" ^ 
+                    log_entry20 ^ "\n" ^ log_entry19 ^ "\n" ^ log_entry18 
+                    ^ "\n" ^ log_entry17 ^ "\n" ^ log_entry16 ^ "\n" ^ 
+                    log_entry15 ^ "\n" ^ log_entry14 ^ "\n" ^ log_entry13 
+                    ^ "\n" ^ log_entry12 ^ "\n" ^ log_entry11 ^ "\n" ^ 
+                    log_entry10 ^ "\n" ^ log_entry9 ^ "\n" ^ log_entry8 ^ "\n" ^ 
+                    log_entry7 ^ "\n" ^ log_entry6 ^ "\n" ^ log_entry5 ^ "\n" ^ 
+                    log_entry4 ^ "\n" ^ log_entry3 ^ "\n" ^ log_entry2 ^ "\n" ^ 
+                    log_entry1) () );
   ]
 
 let init =
@@ -364,6 +497,6 @@ let init =
   ]
 
 (* test suite driver *)
-let tests = List.flatten [ add; commit; init ]
+let tests = List.flatten [ log; add; commit; init ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite
