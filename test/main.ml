@@ -7,19 +7,19 @@ exception Got_initialized of string
 let test_add files _ =
   Unix.sleepf 1.5;
   let result = Commands.Add.run files in
-  assert_equal ("Added " ^ String.concat " " files) result
+  assert_equal ("Added " ^ String.concat " " files) result ~printer:(fun s -> s)
 
 let test_commit messages expected_message _ =
   Unix.sleepf 1.5;
   let _ = Commands.Add.run [ "../test/test/docs/apples.txt" ] in
-  let result = Commands.Commit.run messages in
+  let result = Commands.Commit.run [ "-m"; messages ] in
   (* Printf.printf "Commit result: %s\n" result; *)
   let starts_with_committed = String.sub result 0 9 = "Committed" in
   let contains_message =
     String.contains result ':'
     && String.sub result
-      (String.index result ':' + 3)
-      (String.length expected_message)
+         (String.index result ':' + 3)
+         (String.length expected_message)
        = expected_message
   in
   assert_equal true (starts_with_committed && contains_message)
@@ -38,30 +38,32 @@ let test_init_exists _ =
   ()
 
 let test_log messages ctxt =
+  Unix.sleepf 1.5;
   let rec commit_and_add_messages messages =
     match messages with
     | [] -> ()
     | message :: rest ->
-      Unix.sleepf 0.5;
-      ignore (Commands.Add.run [ "../test/test/docs/apples.txt" ]);
-      Unix.sleepf 0.5;
-      ignore (Commands.Commit.run [ "-m"; message ]);
-      commit_and_add_messages rest
+        Unix.sleepf 0.5;
+        ignore (Commands.Add.run [ "../test/test/docs/apples.txt" ]);
+        Unix.sleepf 0.5;
+        ignore (Commands.Commit.run [ "-m"; message ]);
+        commit_and_add_messages rest
   in
   commit_and_add_messages messages;
   let actual = Commands.Log.run () in
-  Printf.printf "Actual: %s\n" actual;
+  (* Printf.printf "Actual: %s\n" actual; *)
   let actual_messages =
     actual |> String.split_on_char '\n'
     |> List.map (fun line ->
-        match String.index_opt line ']' with
-        | Some idx ->
-          String.trim
-            (String.sub line (idx + 1) (String.length line - idx - 1))
-        | None -> "")
+           match String.index_opt line ']' with
+           | Some idx ->
+               String.trim
+                 (String.sub line (idx + 1) (String.length line - idx - 1))
+           | None -> "")
     |> List.filter (fun message -> message <> "Initial commit")
   in
-  Printf.printf "Actual messages: %s\n" (String.concat ", " actual_messages);
+  (* Printf.printf "Actual messages: %s\n" (String.concat ", "
+     actual_messages); *)
   assert_equal
     ~printer:(fun s -> String.concat ", " s)
     messages (List.rev actual_messages);
@@ -71,27 +73,27 @@ let add =
   [
     (* no files *)
     ( "test with no files" >:: fun _ ->
-          let result = Commands.Add.run [] in
-          assert_equal "No file added." result );
+      let result = Commands.Add.run [] in
+      assert_equal "No file added." result );
     (* variation testing *)
     "test with one file" >:: test_add [ "../test/test/docs/apples.txt" ];
     "test with multiple files"
     >:: test_add
-      [ "../test/test/docs/apples.txt"; "../test/test/docs/loremipsum.txt" ];
+          [ "../test/test/docs/apples.txt"; "../test/test/docs/loremipsum.txt" ];
     "test with images" >:: test_add [ "../test/test/img/james.png" ];
     "test with multiple images"
     >:: test_add [ "../test/test/img/james.png"; "../test/test/img/chris.png" ];
     "test with audio" >:: test_add [ "../test/test/audio/river.mp3" ];
     "test with multiple audio"
     >:: test_add
-      [ "../test/test/audio/river.mp3"; "../test/test/audio/walking.mp3" ];
+          [ "../test/test/audio/river.mp3"; "../test/test/audio/walking.mp3" ];
     "test with images and audio and text"
     >:: test_add
-      [
-        "../test/test/docs/apples.txt";
-        "../test/test/img/james.png";
-        "../test/test/audio/river.mp3";
-      ];
+          [
+            "../test/test/docs/apples.txt";
+            "../test/test/img/james.png";
+            "../test/test/audio/river.mp3";
+          ];
     (* extension variability testing *)
     (* Text Files *)
     "test with Markdown file" >:: test_add [ "../test/test/docs/document.md" ];
@@ -180,15 +182,15 @@ let add =
     (* Mixed File Types in a Single Test *)
     "test with mixed code files"
     >:: test_add
-      [ "../test/test/code/script.py"; "../test/test/code/script.rb" ];
+          [ "../test/test/code/script.py"; "../test/test/code/script.rb" ];
     "test with mixed data files"
     >:: test_add
-      [ "../test/test/docs/data.csv"; "../test/test/docs/sample2.xlsx" ];
+          [ "../test/test/docs/data.csv"; "../test/test/docs/sample2.xlsx" ];
     "test with mixed image files"
     >:: test_add [ "../test/test/img/cat.jpeg"; "../test/test/img/compass.svg" ];
     "test with mixed document files"
     >:: test_add
-      [ "../test/test/docs/sample.docx"; "../test/test/docs/sample1.pptx" ];
+          [ "../test/test/docs/sample.docx"; "../test/test/docs/sample1.pptx" ];
     "test with mixed web files"
     >:: test_add [ "../test/test/code/page.html"; "../test/test/code/app.js" ];
     (* Virtual Machine and Container Files *)
@@ -211,553 +213,478 @@ let add =
     (* Combination of Diverse File Types *)
     "test with various script files"
     >:: test_add
-      [
-        "../test/test/application/sample1.sh"; "../test/test/code/script.py";
-      ];
+          [
+            "../test/test/application/sample1.sh"; "../test/test/code/script.py";
+          ];
     "test with multiple config files"
     >:: test_add
-      [ "../test/test/config/nginx.conf"; "../test/test/config/.gitconfig" ];
+          [ "../test/test/config/nginx.conf"; "../test/test/config/.gitconfig" ];
     "test with mixed media files"
     >:: test_add
-      [ "../test/test/video/sample.mp4"; "../test/test/audio/river.mp3" ];
+          [ "../test/test/video/sample.mp4"; "../test/test/audio/river.mp3" ];
     "test with various document types"
     >:: test_add
-      [ "../test/test/docs/file.pdf"; "../test/test/docs/sample.epub" ];
+          [ "../test/test/docs/file.pdf"; "../test/test/docs/sample.epub" ];
     "test with assorted data files"
     >:: test_add
-      [ "../test/test/data/config.json"; "../test/test/docs/data.csv" ];
+          [ "../test/test/data/config.json"; "../test/test/docs/data.csv" ];
     "test with multiple archive files"
     >:: test_add
-      [ "../test/test/archive/file.zip"; "../test/test/archive/sample.tar" ];
+          [ "../test/test/archive/file.zip"; "../test/test/archive/sample.tar" ];
     "test with various code files"
     >:: test_add [ "../test/test/code/app.js"; "../test/test/code/script.py" ];
     "test with mixed design files"
     >:: test_add
-      [
-        "../test/test/design/sample.psd";
-        "../test/test/design/sample.sketch";
-      ];
+          [
+            "../test/test/design/sample.psd";
+            "../test/test/design/sample.sketch";
+          ];
     "test with various virtual machine files"
     >:: test_add
-      [ "../test/test/vm/virtualbox.vdi"; "../test/test/vm/vmware.vmdk" ];
+          [ "../test/test/vm/virtualbox.vdi"; "../test/test/vm/vmware.vmdk" ];
   ]
 
 let commit =
   [
     (* add file to staging area *)
-    "test commit with no message" >:: test_commit [ "" ] "";
+    "test commit with no message" >:: test_commit "" "";
     "test commit with simple message"
-    >:: test_commit [ "Initial commit" ] "Initial commit";
+    >:: test_commit "Initial commit" "Initial commit";
     "test commit with complex message"
-    >:: test_commit
-      [ "Added new feature with multiple fixes" ]
-      "Added new feature with multiple fixes";
+    >:: test_commit "Added new feature with multiple fixes"
+          "Added new feature with multiple fixes";
     "test commit with special characters"
-    >:: test_commit
-      [ "No special characters: !@#$%^&*()_+" ]
-      "No special characters: !@#$%^&*()_+";
+    >:: test_commit "No special characters: !@#$%^&*()_+"
+          "No special characters: !@#$%^&*()_+";
     "test commit with very long message"
-    >:: test_commit [ String.make 255 'a' ] (String.make 255 'a');
-    "test commit with multiline message"
-    >:: test_commit [ "First line"; "Second line" ] "First line Second line";
-    "test commit with empty message and no changes" >:: test_commit [ "" ] "";
+    >:: test_commit (String.make 255 'a') (String.make 255 'a');
+    "test commit with empty message and no changes" >:: test_commit "" "";
     "test commit with escape characters in message"
-    >:: test_commit
-      [ "Fix line breaks\nand tabs\t" ]
-      "Fix line breaks\nand tabs\t";
+    >:: test_commit "Fix line breaks\nand tabs\t" "Fix line breaks\nand tabs\t";
     "test commit with excessively long message"
-    >:: test_commit [ String.make 1000 'b' ] (String.make 255 'b');
+    >:: test_commit (String.make 1000 'b') (String.make 255 'b');
     "test commit with invalid characters in message"
-    >:: test_commit [ "Invalid char \255 here" ] "Invalid char \255 here";
+    >:: test_commit "Invalid char \255 here" "Invalid char \255 here";
     "test commit with non-ASCII characters"
-    >:: test_commit [ "コミットメッセージ" ] "コミットメッセージ";
+    >:: test_commit "コミットメッセージ" "コミットメッセージ";
     "test commit with mixed language message"
-    >:: test_commit [ "Initial commit - 初期コミット" ] "Initial commit - 初期コミット";
+    >:: test_commit "Initial commit - 初期コミット" "Initial commit - 初期コミット";
     "test commit with leading and trailing whitespace"
-    >:: test_commit [ "   Feature update   " ] "   Feature update   ";
+    >:: test_commit "   Feature update   " "   Feature update   ";
     "test commit with only whitespace in message"
-    >:: test_commit [ "     " ] "     ";
+    >:: test_commit "     " "     ";
     "test commit with quotation marks in message"
-    >:: test_commit
-      [ "Added 'new feature' module" ]
-      "Added 'new feature' module";
-    "test commit with extremely short message" >:: test_commit [ "a" ] "a";
+    >:: test_commit "Added 'new feature' module" "Added 'new feature' module";
+    "test commit with extremely short message" >:: test_commit "a" "a";
     "test commit with git command in message"
-    >:: test_commit
-      [ "Fixed issue; run `git pull` after update" ]
-      "Fixed issue; run `git pull` after update";
+    >:: test_commit "Fixed issue; run `git pull` after update"
+          "Fixed issue; run `git pull` after update";
     "test commit with emojis"
-    >:: test_commit [ "🐛 Fixed bug in code" ] "🐛 Fixed bug in code";
+    >:: test_commit "🐛 Fixed bug in code" "🐛 Fixed bug in code";
     "test commit with markdown-like syntax"
-    >:: test_commit
-      [ "* Added new feature\n* Fixed bug" ]
-      "* Added new feature\n* Fixed bug";
+    >:: test_commit "* Added new feature\n* Fixed bug"
+          "* Added new feature\n* Fixed bug";
     "test commit with HTML-like tags"
-    >:: test_commit
-      [ "<fix> corrected minor issue </fix>" ]
-      "<fix> corrected minor issue </fix>";
+    >:: test_commit "<fix> corrected minor issue </fix>"
+          "<fix> corrected minor issue </fix>";
     "test commit with backslashes in message"
-    >:: test_commit
-      [ "Fixed file paths using \\ paths" ]
-      "Fixed file paths using \\ paths";
+    >:: test_commit "Fixed file paths using \\ paths"
+          "Fixed file paths using \\ paths";
     "test commit with environment variables in message"
-    >:: test_commit
-      [ "Updated PATH in $HOME/.bashrc" ]
-      "Updated PATH in $HOME/.bashrc";
+    >:: test_commit "Updated PATH in $HOME/.bashrc"
+          "Updated PATH in $HOME/.bashrc";
     "test commit with null character in message"
-    >:: test_commit [ "Null char \000 present" ] "Null char \000 present";
+    >:: test_commit "Null char \000 present" "Null char \000 present";
     "test commit with only numeric characters in message"
-    >:: test_commit [ "1234567890" ] "1234567890";
+    >:: test_commit "1234567890" "1234567890";
     "test commit with code snippet in message"
-    >:: test_commit
-      [ "Refactored loop: for(i = 0; i < n; i++) {...}" ]
-      "Refactored loop: for(i = 0; i < n; i++) {...}";
+    >:: test_commit "Refactored loop: for(i = 0; i < n; i++) {...}"
+          "Refactored loop: for(i = 0; i < n; i++) {...}";
     "test commit with mixed case message"
-    >:: test_commit
-      [ "FiXeD Case Sensitivity ISSUE" ]
-      "FiXeD Case Sensitivity ISSUE";
+    >:: test_commit "FiXeD Case Sensitivity ISSUE"
+          "FiXeD Case Sensitivity ISSUE";
     "test commit with SQL-like syntax in message"
-    >:: test_commit
-      [ "Updated DB: SELECT * FROM users;" ]
-      "Updated DB: SELECT * FROM users;";
+    >:: test_commit "Updated DB: SELECT * FROM users;"
+          "Updated DB: SELECT * FROM users;";
     "test commit with XML content in message"
-    >:: test_commit
-      [ "<xml><update>123</update></xml>" ]
-      "<xml><update>123</update></xml>";
+    >:: test_commit "<xml><update>123</update></xml>"
+          "<xml><update>123</update></xml>";
     "test commit with timestamp in message"
-    >:: test_commit
-      [ "Backup created on 2023-03-15 10:00:00 UTC" ]
-      "Backup created on 2023-03-15 10:00:00 UTC";
+    >:: test_commit "Backup created on 2023-03-15 10:00:00 UTC"
+          "Backup created on 2023-03-15 10:00:00 UTC";
     "test commit with URL in message"
-    >:: test_commit
-      [ "Fixed issue, see http://example.com for details" ]
-      "Fixed issue, see http://example.com for details";
+    >:: test_commit "Fixed issue, see http://example.com for details"
+          "Fixed issue, see http://example.com for details";
     "test commit with brackets in message"
-    >:: test_commit
-      [ "Fixed issue (see issue #123)" ]
-      "Fixed issue (see issue #123)";
+    >:: test_commit "Fixed issue (see issue #123)"
+          "Fixed issue (see issue #123)";
     "test commit with indented message"
-    >:: test_commit
-      [ "    Indented message for formatting" ]
-      "    Indented message for formatting";
+    >:: test_commit "    Indented message for formatting"
+          "    Indented message for formatting";
     "test commit with bullet points in message"
-    >:: test_commit
-      [ "- Added feature A\n- Fixed bug B" ]
-      "- Added feature A\n- Fixed bug B";
+    >:: test_commit "- Added feature A\n- Fixed bug B"
+          "- Added feature A\n- Fixed bug B";
     "test commit with hash character in message"
-    >:: test_commit
-      [ "Updated README #documentation" ]
-      "Updated README #documentation";
-    "test commit with only spaces in message"
-    >:: test_commit [ "     " ] "     ";
+    >:: test_commit "Updated README #documentation"
+          "Updated README #documentation";
+    "test commit with only spaces in message" >:: test_commit "     " "     ";
     "test commit with control characters in message"
-    >:: test_commit [ "Line1\nLine2\tTabbed" ] "Line1\nLine2\tTabbed";
+    >:: test_commit "Line1\nLine2\tTabbed" "Line1\nLine2\tTabbed";
     "test commit with duplicate message"
-    >:: test_commit [ "Duplicate message" ] "Duplicate message";
+    >:: test_commit "Duplicate message" "Duplicate message";
     "test commit with mathematical symbols in message"
-    >:: test_commit
-      [ "Improved efficiency by 50%" ]
-      "Improved efficiency by 50%";
+    >:: test_commit "Improved efficiency by 50%" "Improved efficiency by 50%";
     "test commit with file paths in message"
-    >:: test_commit
-      [ "Updated file at /src/main.c" ]
-      "Updated file at /src/main.c";
+    >:: test_commit "Updated file at /src/main.c" "Updated file at /src/main.c";
     "test commit with conditional phrase in message"
-    >:: test_commit
-      [ "If user is admin, allow access to settings" ]
-      "If user is admin, allow access to settings";
+    >:: test_commit "If user is admin, allow access to settings"
+          "If user is admin, allow access to settings";
     "test commit with various date formats in message"
-    >:: test_commit
-      [ "Event date changed: 03/15/2023 to April 5th, 2023" ]
-      "Event date changed: 03/15/2023 to April 5th, 2023";
+    >:: test_commit "Event date changed: 03/15/2023 to April 5th, 2023"
+          "Event date changed: 03/15/2023 to April 5th, 2023";
     "test commit with multiple languages in message"
-    >:: test_commit
-      [ "Initial commit - 初期コミット - ابتدائی کمیٹ" ]
-      "Initial commit - 初期コミット - ابتدائی کمیٹ";
+    >:: test_commit "Initial commit - 初期コミット - ابتدائی کمیٹ"
+          "Initial commit - 初期コミット - ابتدائی کمیٹ";
     "test commit with repeated messages"
-    >:: test_commit [ "Repeat commit" ] "Repeat commit";
+    >:: test_commit "Repeat commit" "Repeat commit";
     "test commit with only numeric characters and special symbols"
-    >:: test_commit [ "1234567890!@#$%^&*()" ] "1234567890!@#$%^&*()";
+    >:: test_commit "1234567890!@#$%^&*()" "1234567890!@#$%^&*()";
     "test commit with interleaved special characters and text"
-    >:: test_commit [ "Fi#x1! @Issue (Resolved)" ] "Fi#x1! @Issue (Resolved)";
+    >:: test_commit "Fi#x1! @Issue (Resolved)" "Fi#x1! @Issue (Resolved)";
     "test commit with incomplete escape sequences"
-    >:: test_commit
-      [ "Incomplete escape \\ sequence" ]
-      "Incomplete escape \\ sequence";
+    >:: test_commit "Incomplete escape \\ sequence"
+          "Incomplete escape \\ sequence";
     "test commit with only special characters"
-    >:: test_commit
-      [ "!@#$%^&*()_+-=[]{};':\",.<>/?`~" ]
-      "!@#$%^&*()_+-=[]{};':\",.<>/?`~";
+    >:: test_commit "!@#$%^&*()_+-=[]{};':\",.<>/?`~"
+          "!@#$%^&*()_+-=[]{};':\",.<>/?`~";
     "test commit with a very short message repeated many times"
     >:: test_commit
-      [ String.concat "" (Array.to_list (Array.make 100 "x")) ]
-      (String.concat "" (Array.to_list (Array.make 100 "x")));
+          (String.concat "" (Array.to_list (Array.make 100 "x")))
+          (String.concat "" (Array.to_list (Array.make 100 "x")));
     "test commit with network paths"
-    >:: test_commit
-      [ "Updated network path \\\\network\\shared\\file" ]
-      "Updated network path \\\\network\\shared\\file";
+    >:: test_commit "Updated network path \\\\network\\shared\\file"
+          "Updated network path \\\\network\\shared\\file";
     "test commit with URLs"
-    >:: test_commit
-      [ "See documentation at https://example.com/docs" ]
-      "See documentation at https://example.com/docs";
+    >:: test_commit "See documentation at https://example.com/docs"
+          "See documentation at https://example.com/docs";
     "test commit with only numbers and punctuation"
-    >:: test_commit [ "1234567890,.;'[]!" ] "1234567890,.;'[]!";
+    >:: test_commit "1234567890,.;'[]!" "1234567890,.;'[]!";
     "test commit with code snippet"
-    >:: test_commit
-      [ "Fix: `if (x < 10) { return x; }` in script.js" ]
-      "Fix: `if (x < 10) { return x; }` in script.js";
+    >:: test_commit "Fix: `if (x < 10) { return x; }` in script.js"
+          "Fix: `if (x < 10) { return x; }` in script.js";
     "test commit with automated message"
-    >:: test_commit [ "Automated build: success" ] "Automated build: success";
+    >:: test_commit "Automated build: success" "Automated build: success";
     "test commit with multiline varied content"
-    >:: test_commit
-      [ "Line 1\n12345\nSpecial: *&^%$" ]
-      "Line 1\n12345\nSpecial: *&^%$";
+    >:: test_commit "Line 1\n12345\nSpecial: *&^%$"
+          "Line 1\n12345\nSpecial: *&^%$";
     "test commit with different date formats"
-    >:: test_commit
-      [ "Event on 2023-04-01, April 1st, 01/04/2023" ]
-      "Event on 2023-04-01, April 1st, 01/04/2023";
+    >:: test_commit "Event on 2023-04-01, April 1st, 01/04/2023"
+          "Event on 2023-04-01, April 1st, 01/04/2023";
     "test commit with file extensions"
-    >:: test_commit
-      [ "Updated README.md and script.py" ]
-      "Updated README.md and script.py";
+    >:: test_commit "Updated README.md and script.py"
+          "Updated README.md and script.py";
     "test commit with JSON string"
-    >:: test_commit [ "{\"key\": \"value\"}" ] "{\"key\": \"value\"}";
+    >:: test_commit "{\"key\": \"value\"}" "{\"key\": \"value\"}";
     "test commit with XML string"
-    >:: test_commit [ "<tag>content</tag>" ] "<tag>content</tag>";
+    >:: test_commit "<tag>content</tag>" "<tag>content</tag>";
     "test commit with repeated substrings"
-    >:: test_commit [ "fix fix fix bug" ] "fix fix fix bug";
+    >:: test_commit "fix fix fix bug" "fix fix fix bug";
     "test commit with tabulated data"
-    >:: test_commit
-      [ "Data:\nName\tAge\nAlice\t30\nBob\t25" ]
-      "Data:\nName\tAge\nAlice\t30\nBob\t25";
+    >:: test_commit "Data:\nName\tAge\nAlice\t30\nBob\t25"
+          "Data:\nName\tAge\nAlice\t30\nBob\t25";
     "test commit with file system commands"
-    >:: test_commit
-      [ "Updated script: `rm -rf /tmp/*`" ]
-      "Updated script: `rm -rf /tmp/*`";
+    >:: test_commit "Updated script: `rm -rf /tmp/*`"
+          "Updated script: `rm -rf /tmp/*`";
     "test commit with cross-platform file paths"
-    >:: test_commit
-      [ "Fixed paths: C:\\Users\\user and /home/user" ]
-      "Fixed paths: C:\\Users\\user and /home/user";
+    >:: test_commit "Fixed paths: C:\\Users\\user and /home/user"
+          "Fixed paths: C:\\Users\\user and /home/user";
     "test commit with historical references"
-    >:: test_commit
-      [ "Reverted changes from 1920-1930" ]
-      "Reverted changes from 1920-1930";
+    >:: test_commit "Reverted changes from 1920-1930"
+          "Reverted changes from 1920-1930";
     "test commit with regular expressions"
-    >:: test_commit
-      [ "Regex update: ^[a-zA-Z0-9]+$" ]
-      "Regex update: ^[a-zA-Z0-9]+$";
+    >:: test_commit "Regex update: ^[a-zA-Z0-9]+$"
+          "Regex update: ^[a-zA-Z0-9]+$";
     "test commit with pseudo-code"
-    >:: test_commit
-      [ "Algorithm: if x > y then x else y" ]
-      "Algorithm: if x > y then x else y";
+    >:: test_commit "Algorithm: if x > y then x else y"
+          "Algorithm: if x > y then x else y";
     "test commit with currency symbols"
-    >:: test_commit
-      [ "Prices updated: $100, €80, £70" ]
-      "Prices updated: $100, €80, £70";
+    >:: test_commit "Prices updated: $100, €80, £70"
+          "Prices updated: $100, €80, £70";
     "test commit with scientific notation"
-    >:: test_commit
-      [ "Adjusted value: 6.02e23 particles/mole" ]
-      "Adjusted value: 6.02e23 particles/mole";
+    >:: test_commit "Adjusted value: 6.02e23 particles/mole"
+          "Adjusted value: 6.02e23 particles/mole";
     "test commit with hashtags and mentions"
-    >:: test_commit
-      [ "New feature #release @devteam" ]
-      "New feature #release @devteam";
+    >:: test_commit "New feature #release @devteam"
+          "New feature #release @devteam";
     "test commit with palindrome message"
-    >:: test_commit
-      [ "A man a plan a canal Panama" ]
-      "A man a plan a canal Panama";
+    >:: test_commit "A man a plan a canal Panama" "A man a plan a canal Panama";
     "test commit with chemical formulas"
-    >:: test_commit
-      [ "Updated reaction: H2O + CO2 -> H2CO3" ]
-      "Updated reaction: H2O + CO2 -> H2CO3";
+    >:: test_commit "Updated reaction: H2O + CO2 -> H2CO3"
+          "Updated reaction: H2O + CO2 -> H2CO3";
     "test commit with literary references"
-    >:: test_commit
-      [ "Bug fix based on 'To Kill a Mockingbird'" ]
-      "Bug fix based on 'To Kill a Mockingbird'";
+    >:: test_commit "Bug fix based on 'To Kill a Mockingbird'"
+          "Bug fix based on 'To Kill a Mockingbird'";
     "test commit with VINs"
-    >:: test_commit
-      [ "Updated vehicle data: VIN 1HGCM82633A004352" ]
-      "Updated vehicle data: VIN 1HGCM82633A004352";
+    >:: test_commit "Updated vehicle data: VIN 1HGCM82633A004352"
+          "Updated vehicle data: VIN 1HGCM82633A004352";
     "test commit with political statements"
-    >:: test_commit
-      [ "Refactor based on 1990's economic policies" ]
-      "Refactor based on 1990's economic policies";
+    >:: test_commit "Refactor based on 1990's economic policies"
+          "Refactor based on 1990's economic policies";
     "test commit with pseudonyms"
-    >:: test_commit
-      [ "Code review by The Architect" ]
-      "Code review by The Architect";
+    >:: test_commit "Code review by The Architect"
+          "Code review by The Architect";
     "test commit with mathematical expressions"
-    >:: test_commit
-      [ "Optimized algorithm for x^2 + y^2 = z^2" ]
-      "Optimized algorithm for x^2 + y^2 = z^2";
+    >:: test_commit "Optimized algorithm for x^2 + y^2 = z^2"
+          "Optimized algorithm for x^2 + y^2 = z^2";
     "test commit with multiple programming languages"
-    >:: test_commit
-      [ "Fixed Python and JS scripts: def func(), function() {}" ]
-      "Fixed Python and JS scripts: def func(), function() {}";
+    >:: test_commit "Fixed Python and JS scripts: def func(), function() {}"
+          "Fixed Python and JS scripts: def func(), function() {}";
     "test commit with recipes"
-    >:: test_commit
-      [ "Updated recipe: 2 cups flour, 1 cup sugar" ]
-      "Updated recipe: 2 cups flour, 1 cup sugar";
+    >:: test_commit "Updated recipe: 2 cups flour, 1 cup sugar"
+          "Updated recipe: 2 cups flour, 1 cup sugar";
     "test commit with music references"
-    >:: test_commit
-      [ "Interface redesign inspired by Van Gogh's Starry Night" ]
-      "Interface redesign inspired by Van Gogh's Starry Night";
+    >:: test_commit "Interface redesign inspired by Van Gogh's Starry Night"
+          "Interface redesign inspired by Van Gogh's Starry Night";
     "test commit with astronomical data"
-    >:: test_commit
-      [ "New feature: Mars Rover data processing module" ]
-      "New feature: Mars Rover data processing module";
+    >:: test_commit "New feature: Mars Rover data processing module"
+          "New feature: Mars Rover data processing module";
     "test commit with legal jargon"
     >:: test_commit
-      [ "Updated terms and conditions as per Clause 18B of the Agreement." ]
-      "Updated terms and conditions as per Clause 18B of the Agreement.";
+          "Updated terms and conditions as per Clause 18B of the Agreement."
+          "Updated terms and conditions as per Clause 18B of the Agreement.";
     "test commit with professional jargon"
-    >:: test_commit
-      [ "Refactored the ETL pipeline for better data warehousing." ]
-      "Refactored the ETL pipeline for better data warehousing.";
+    >:: test_commit "Refactored the ETL pipeline for better data warehousing."
+          "Refactored the ETL pipeline for better data warehousing.";
     "test commit with multiple time zones"
-    >:: test_commit
-      [ "Event times updated for EST, GMT, and IST." ]
-      "Event times updated for EST, GMT, and IST.";
+    >:: test_commit "Event times updated for EST, GMT, and IST."
+          "Event times updated for EST, GMT, and IST.";
     "test commit with complex algorithm pseudocode"
     >:: test_commit
-      [ "Optimized sorting: while n > 1, swap elements if in wrong order" ]
-      "Optimized sorting: while n > 1, swap elements if in wrong order";
+          "Optimized sorting: while n > 1, swap elements if in wrong order"
+          "Optimized sorting: while n > 1, swap elements if in wrong order";
     "test commit with philosophical quotes"
     >:: test_commit
-      [ "Code refactor inspired by 'I think, therefore I am' - Descartes" ]
-      "Code refactor inspired by 'I think, therefore I am' - Descartes";
+          "Code refactor inspired by 'I think, therefore I am' - Descartes"
+          "Code refactor inspired by 'I think, therefore I am' - Descartes";
     "test commit with mathematical symbols"
-    >:: test_commit
-      [ "Updated calculation: ∫(x²)dx from 0 to 1" ]
-      "Updated calculation: ∫(x²)dx from 0 to 1";
+    >:: test_commit "Updated calculation: ∫(x²)dx from 0 to 1"
+          "Updated calculation: ∫(x²)dx from 0 to 1";
     "test commit with design terms"
-    >:: test_commit
-      [ "Redesigned UI based on Bauhaus principles." ]
-      "Redesigned UI based on Bauhaus principles.";
+    >:: test_commit "Redesigned UI based on Bauhaus principles."
+          "Redesigned UI based on Bauhaus principles.";
     "test commit with scientific experiment description"
     >:: test_commit
-      [
-        "Fixed the data analysis module: titration experiment with NaOH \
-         and HCl.";
-      ]
-      "Fixed the data analysis module: titration experiment with NaOH and \
-       HCl.";
+          "Fixed the data analysis module: titration experiment with NaOH and \
+           HCl."
+          "Fixed the data analysis module: titration experiment with NaOH and \
+           HCl.";
     "test commit with Morse code"
     >:: test_commit
-      [ "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. ." ]
-      "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. .";
+          "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. ."
+          "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. .";
     "test commit with binary code"
-    >:: test_commit
-      [ "Fixed issue 01010100 01000001 01000010" ]
-      "Fixed issue 01010100 01000001 01000010";
+    >:: test_commit "Fixed issue 01010100 01000001 01000010"
+          "Fixed issue 01010100 01000001 01000010";
     "test commit with reverse order message"
-    >:: test_commit [ "egasseM esreveR" ] "egasseM esreveR";
+    >:: test_commit "egasseM esreveR" "egasseM esreveR";
     "test commit with geographical coordinates"
-    >:: test_commit
-      [ "Location tagged at 37.7749° N, 122.4194° W" ]
-      "Location tagged at 37.7749° N, 122.4194° W";
+    >:: test_commit "Location tagged at 37.7749° N, 122.4194° W"
+          "Location tagged at 37.7749° N, 122.4194° W";
     "test commit with hexadecimal values"
-    >:: test_commit
-      [ "Color update: #FF5733, #4A69BD" ]
-      "Color update: #FF5733, #4A69BD";
+    >:: test_commit "Color update: #FF5733, #4A69BD"
+          "Color update: #FF5733, #4A69BD";
     "test commit with scientific terms"
-    >:: test_commit
-      [ "Updated algorithm to consider homeostasis and metabolism" ]
-      "Updated algorithm to consider homeostasis and metabolism";
+    >:: test_commit "Updated algorithm to consider homeostasis and metabolism"
+          "Updated algorithm to consider homeostasis and metabolism";
     "test commit with multi-paragraph message"
-    >:: test_commit
-      [ "First paragraph.\n\nSecond paragraph." ]
-      "First paragraph.\n\nSecond paragraph.";
+    >:: test_commit "First paragraph.\n\nSecond paragraph."
+          "First paragraph.\n\nSecond paragraph.";
     "test commit with pseudo-random strings"
-    >:: test_commit
-      [ "Random string: asd93#d_!2kD" ]
-      "Random string: asd93#d_!2kD";
+    >:: test_commit "Random string: asd93#d_!2kD" "Random string: asd";
+    "test commit with pseudo-random strings"
+    >:: test_commit "Random string: asd93#d_!2kD" "Random string: asd93#d_!2kD";
     "test commit with fictional language"
-    >:: test_commit
-      [ "Klingon code update: Qapla' batlh je" ]
-      "Klingon code update: Qapla' batlh je";
+    >:: test_commit "Klingon code update: Qapla' batlh je"
+          "Klingon code update: Qapla' batlh je";
     "test commit with anagrams"
-    >:: test_commit [ "Astronomer -> Moon starer" ] "Astronomer -> Moon starer";
+    >:: test_commit "Astronomer -> Moon starer" "Astronomer -> Moon starer";
     "test commit with technical specifications"
-    >:: test_commit
-      [ "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB" ]
-      "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB";
+    >:: test_commit "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB"
+          "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB";
     "test commit with recipe instructions"
     >:: test_commit
-      [ "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins" ]
-      "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins";
+          "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins"
+          "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins";
     "test commit with non-standard formatting"
-    >:: test_commit
-      [ "Markdown update: **Bold**, *Italic*, `Code`" ]
-      "Markdown update: **Bold**, *Italic*, `Code`";
+    >:: test_commit "Markdown update: **Bold**, *Italic*, `Code`"
+          "Markdown update: **Bold**, *Italic*, `Code`";
     "test commit with fictional characters"
-    >:: test_commit
-      [ "Updated character: Frodo Baggins" ]
-      "Updated character: Frodo Baggins";
+    >:: test_commit "Updated character: Frodo Baggins"
+          "Updated character: Frodo Baggins";
   ]
 
 let log =
   [
     "test log with large commit test"
     >:: test_log
-      [
-        "Added new feature with multiple fixes";
-        "Fixed issue; run `git pull` after update";
-        "Updated PATH in $HOME/.bashrc";
-        "Fixed file paths using \\ paths";
-        "Fixed issue, see http://example.com for details";
-        "Fixed issue (see issue #123)";
-        "Fixed paths: C:\\Users\\user and /home/user";
-        "Fixed issue: 1234567890!@#$%^&*()";
-        "Added logging for debugging purposes";
-        "Refactored main() function for better readability";
-        "Implemented user authentication feature";
-        "Resolved merge conflict in utils.py";
-        "Updated README with new installation instructions";
-        "Deprecated old API endpoint";
-        "Optimized database queries for performance";
-        "Added unit tests for the UserService class";
-        "Removed unused dependencies from package.json";
-        "Fixed broken image links in documentation";
-        "Corrected typos in the user interface";
-        "Upgraded to latest version of React";
-        "Implemented dark mode for the application";
-        "Fixed XSS vulnerability in comment section";
-        "Added localization support for Spanish and French";
-        "Resolved issue where application crashes on load";
-        "Fixed layout issues on mobile devices";
-        "Implemented caching for API responses";
-        "Updated user profile page design";
-        "Added error handling for network requests";
-        "Refactored codebase to use async/await syntax";
-        "Improved logging for error tracking";
-        "Fixed incorrect status codes in API responses";
-        "Implemented feature toggle for beta features";
-        "Resolved timezone issues in event scheduling";
-        "Fixed issue where user is logged out unexpectedly";
-        "Adjusted layout for responsive design compatibility";
-        "Implemented OAuth2.0 for enhanced security";
-        "Reformatted code according to PEP8 standards";
-        "Enhanced user input validation on forms";
-        "Integrated third-party API for weather data";
-        "Fixed bug causing memory leaks in server code";
-        "Updated Dockerfile for optimized container builds";
-        "Added feature flag for experimental search functionality";
-        "Improved load times by optimizing image assets";
-        "Refactored database schema for better scalability";
-        "Added support for WebSockets in chat application";
-        "Fixed issue where emails were not being sent";
-        "Upgraded server to latest version of Node.js";
-        "Implemented rate limiting on API endpoints";
-        "Added analytics tracking for user interactions";
-        "Fixed scroll issue in the newsfeed section";
-        "Added webhook support for external integrations";
-        "Corrected date calculations in reports";
-        "Updated copyright notice in project footer";
-        "Implemented lazy loading for better performance";
-        "Fixed alignment issues in the navigation bar";
-        "Added user feedback form for feature requests";
-        "Enhanced search algorithm for faster results";
-        "Resolved compatibility issue with Safari browser";
-        "Improved user notification system";
-        "Added avatar upload feature for user profiles";
-        "Implemented password reset functionality";
-        "Fixed error in SQL query causing data corruption";
-        "Added pagination to the product listing page";
-        "Enhanced security measures for user data protection";
-        "Refactored session management for robustness";
-        "Fixed issue with responsive layout on tablets";
-        "Implemented custom 404 error page";
-        "Improved caching mechanism for static assets";
-        "Added sorting functionality to the dashboard";
-        "Refactored code for service layer abstraction";
-        "Enhanced data validation on the backend";
-        "Fixed UI glitch in the settings panel";
-        "Implemented bulk actions in the admin interface";
-        "Added email verification flow for new users";
-        "Fixed incorrect API response format";
-        "Updated project dependencies to the latest versions";
-        "Added user activity logs for auditing purposes";
-        "Fixed flickering issue in the animation";
-        "Implemented theme customization options";
-        "Refactored global state management using Redux";
-        "Added GDPR compliance measures";
-        "Improved error handling in the file upload feature";
-        "Implemented two-factor authentication for security";
-        "Fixed issue with infinite scroll on mobile devices";
-        "Refactored routing logic in the front-end application";
-        "Improved performance of the search functionality";
-        "Added unit tests for new utility functions";
-        "Fixed cross-origin resource sharing (CORS) issues";
-        "Updated user interface for better usability";
-        "Refactored database interaction layer";
-        "Enhanced email templates for better readability";
-        "Fixed broken links in the navigation menu";
-        "Implemented a new feature for report generation";
-        "Improved accessibility features for screen readers";
-        "Fixed layout issues in the email templates";
-        "Added API documentation using Swagger";
-        "Refactored client-side validation logic";
-        "Implemented a caching layer for database queries";
-        "Fixed timezone handling in appointment scheduling";
-        "Added error logging to external monitoring service";
-        "Refactored authentication flow";
-        "Improved the algorithm for recommendations";
-        "Fixed issue with duplicate entries in the database";
-        "Added user roles and permissions functionality";
-        "Refactored CSS for better maintainability";
-        "Enhanced the mobile user experience";
-        "Fixed performance issue with large data sets";
-        "Added integration with a payment gateway";
-        "Implemented a feature for exporting data to CSV";
-        "Fixed bug in the notification dispatch system";
-        "Updated privacy policy in compliance with new regulations";
-        "Refactored the API layer for better maintainability";
-        "Enhanced the user onboarding experience";
-        "Fixed issue with profile picture uploads";
-        "Added a feature for real-time data synchronization";
-        "Refactored the logging system for better insights";
-        "Implemented a new design for the landing page";
-        "Fixed issue with the chat functionality in the app";
-        "Added automated backup system for database";
-        "Implemented data visualization for analytics";
-        "Fixed issue with user session expiration";
-        "Added new filters in the search functionality";
-        "Refactored API endpoints for RESTful design";
-        "Enhanced security checks in the authentication process";
-        "Fixed layout issue on high-resolution displays";
-        "Added functionality for user-generated content";
-        "Implemented a responsive design for mobile users";
-        "Fixed bug affecting loading times on the homepage";
-        "Refactored the newsletter subscription logic";
-        "Enhanced the file management system in the app";
-        "Fixed UI issue in the dark mode theme";
-        "Implemented an admin dashboard for user management";
-        "Refactored email sending logic to an async queue";
-        "Enhanced performance of the image processing module";
-        "Fixed compatibility issues with older browsers";
-        "Added a feature for user-generated reports";
-        "Refactored the payment processing module";
-        "Enhanced the security of the file storage system";
-        "Fixed issue with form submission on contact page";
-        "Implemented a tagging system for content categorization";
-        "Refactored the frontend build process for optimization";
-        "Enhanced the localization system for multiple languages";
-        "Fixed issue with data export in the admin panel";
-        "Added notifications for user actions";
-        "Refactored the model layer for database efficiency";
-        "Enhanced the UI design for a modern look";
-        "Fixed bug in user role assignment logic";
-        "Implemented a review and rating system";
-        "Refactored the event handling mechanism";
-        "Enhanced the API rate limiting feature";
-        "Fixed issue with asynchronous task processing";
-        "Added a module for automated report generation";
-        "Refactored client-side routing for SPA";
-        "Enhanced the search engine optimization (SEO) features";
-        "Fixed issue with mobile navigation in the app";
-        "Implemented a new feature for user notifications";
-      ];
+          [
+            "Added new feature with multiple fixes";
+            "Fixed issue; run `git pull` after update";
+            "Updated PATH in $HOME/.bashrc";
+            "Fixed file paths using \\ paths";
+            "Fixed issue, see http://example.com for details";
+            "Fixed issue (see issue #123)";
+            "Fixed paths: C:\\Users\\user and /home/user";
+            "Fixed issue: 1234567890!@#$%^&*()";
+            "Added logging for debugging purposes";
+            "Refactored main() function for better readability";
+            "Implemented user authentication feature";
+            "Resolved merge conflict in utils.py";
+            "Updated README with new installation instructions";
+            "Deprecated old API endpoint";
+            "Optimized database queries for performance";
+            "Added unit tests for the UserService class";
+            "Removed unused dependencies from package.json";
+            "Fixed broken image links in documentation";
+            "Corrected typos in the user interface";
+            "Upgraded to latest version of React";
+            "Implemented dark mode for the application";
+            "Fixed XSS vulnerability in comment section";
+            "Added localization support for Spanish and French";
+            "Resolved issue where application crashes on load";
+            "Fixed layout issues on mobile devices";
+            "Implemented caching for API responses";
+            "Updated user profile page design";
+            "Added error handling for network requests";
+            "Refactored codebase to use async/await syntax";
+            "Improved logging for error tracking";
+            "Fixed incorrect status codes in API responses";
+            "Implemented feature toggle for beta features";
+            "Resolved timezone issues in event scheduling";
+            "Fixed issue where user is logged out unexpectedly";
+            "Adjusted layout for responsive design compatibility";
+            "Implemented OAuth2.0 for enhanced security";
+            "Reformatted code according to PEP8 standards";
+            "Enhanced user input validation on forms";
+            "Integrated third-party API for weather data";
+            "Fixed bug causing memory leaks in server code";
+            "Updated Dockerfile for optimized container builds";
+            "Added feature flag for experimental search functionality";
+            "Improved load times by optimizing image assets";
+            "Refactored database schema for better scalability";
+            "Added support for WebSockets in chat application";
+            "Fixed issue where emails were not being sent";
+            "Upgraded server to latest version of Node.js";
+            "Implemented rate limiting on API endpoints";
+            "Added analytics tracking for user interactions";
+            "Fixed scroll issue in the newsfeed section";
+            "Added webhook support for external integrations";
+            "Corrected date calculations in reports";
+            "Updated copyright notice in project footer";
+            "Implemented lazy loading for better performance";
+            "Fixed alignment issues in the navigation bar";
+            "Added user feedback form for feature requests";
+            "Enhanced search algorithm for faster results";
+            "Resolved compatibility issue with Safari browser";
+            "Improved user notification system";
+            "Added avatar upload feature for user profiles";
+            "Implemented password reset functionality";
+            "Fixed error in SQL query causing data corruption";
+            "Added pagination to the product listing page";
+            "Enhanced security measures for user data protection";
+            "Refactored session management for robustness";
+            "Fixed issue with responsive layout on tablets";
+            "Implemented custom 404 error page";
+            "Improved caching mechanism for static assets";
+            "Added sorting functionality to the dashboard";
+            "Refactored code for service layer abstraction";
+            "Enhanced data validation on the backend";
+            "Fixed UI glitch in the settings panel";
+            "Implemented bulk actions in the admin interface";
+            "Added email verification flow for new users";
+            "Fixed incorrect API response format";
+            "Updated project dependencies to the latest versions";
+            "Added user activity logs for auditing purposes";
+            "Fixed flickering issue in the animation";
+            "Implemented theme customization options";
+            "Refactored global state management using Redux";
+            "Added GDPR compliance measures";
+            "Improved error handling in the file upload feature";
+            "Implemented two-factor authentication for security";
+            "Fixed issue with infinite scroll on mobile devices";
+            "Refactored routing logic in the front-end application";
+            "Improved performance of the search functionality";
+            "Added unit tests for new utility functions";
+            "Fixed cross-origin resource sharing (CORS) issues";
+            "Updated user interface for better usability";
+            "Refactored database interaction layer";
+            "Enhanced email templates for better readability";
+            "Fixed broken links in the navigation menu";
+            "Implemented a new feature for report generation";
+            "Improved accessibility features for screen readers";
+            "Fixed layout issues in the email templates";
+            "Added API documentation using Swagger";
+            "Refactored client-side validation logic";
+            "Implemented a caching layer for database queries";
+            "Fixed timezone handling in appointment scheduling";
+            "Added error logging to external monitoring service";
+            "Refactored authentication flow";
+            "Improved the algorithm for recommendations";
+            "Fixed issue with duplicate entries in the database";
+            "Added user roles and permissions functionality";
+            "Refactored CSS for better maintainability";
+            "Enhanced the mobile user experience";
+            "Fixed performance issue with large data sets";
+            "Added integration with a payment gateway";
+            "Implemented a feature for exporting data to CSV";
+            "Fixed bug in the notification dispatch system";
+            "Updated privacy policy in compliance with new regulations";
+            "Refactored the API layer for better maintainability";
+            "Enhanced the user onboarding experience";
+            "Fixed issue with profile picture uploads";
+            "Added a feature for real-time data synchronization";
+            "Refactored the logging system for better insights";
+            "Implemented a new design for the landing page";
+            "Fixed issue with the chat functionality in the app";
+            "Added automated backup system for database";
+            "Implemented data visualization for analytics";
+            "Fixed issue with user session expiration";
+            "Added new filters in the search functionality";
+            "Refactored API endpoints for RESTful design";
+            "Enhanced security checks in the authentication process";
+            "Fixed layout issue on high-resolution displays";
+            "Added functionality for user-generated content";
+            "Implemented a responsive design for mobile users";
+            "Fixed bug affecting loading times on the homepage";
+            "Refactored the newsletter subscription logic";
+            "Enhanced the file management system in the app";
+            "Fixed UI issue in the dark mode theme";
+            "Implemented an admin dashboard for user management";
+            "Refactored email sending logic to an async queue";
+            "Enhanced performance of the image processing module";
+            "Fixed compatibility issues with older browsers";
+            "Added a feature for user-generated reports";
+            "Refactored the payment processing module";
+            "Enhanced the security of the file storage system";
+            "Fixed issue with form submission on contact page";
+            "Implemented a tagging system for content categorization";
+            "Refactored the frontend build process for optimization";
+            "Enhanced the localization system for multiple languages";
+            "Fixed issue with data export in the admin panel";
+            "Added notifications for user actions";
+            "Refactored the model layer for database efficiency";
+            "Enhanced the UI design for a modern look";
+            "Fixed bug in user role assignment logic";
+            "Implemented a review and rating system";
+            "Refactored the event handling mechanism";
+            "Enhanced the API rate limiting feature";
+            "Fixed issue with asynchronous task processing";
+            "Added a module for automated report generation";
+            "Refactored client-side routing for SPA";
+            "Enhanced the search engine optimization (SEO) features";
+            "Fixed issue with mobile navigation in the app";
+            "Implemented a new feature for user notifications";
+          ];
   ]
 
 let init =
@@ -766,13 +693,14 @@ let init =
     "test init with existing repository" >:: test_init_exists;
   ]
 
-(* let test_status_empty _ = let expected = "nothing to be committed, working
-   tree clean" in let actual = run () in assert_equal expected actual
-   ~printer:(fun s -> s)
+let test_status_empty _ =
+  let expected = "nothing to be committed, working tree clean" in
+  let actual = Commands.Status.run () in
+  assert_equal expected actual ~printer:(fun s -> s)
 
-   let status = [ "test_status_empty" >:: test_status_empty ] *)
+let status = [ "test_status_empty" >:: test_status_empty ]
 
 (* test suite driver *)
-let tests = List.flatten [ log ]
+let tests = List.flatten [ add; commit; log; init; status ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite

@@ -134,8 +134,7 @@ let clear_commit_history () =
   let commit_filenames = retrieve_all_commit_filenames () in
   List.iter
     (fun filename -> Sys.remove (Filesystem.Repo.commit_dir () ^ filename))
-    commit_filenames;
-  Printf.printf "Clearing commit history...\n"
+    commit_filenames
 
 let restore_working_dir_to (timestamp : Filesystem.filename) : unit =
   if not (Filesystem.check_empty_stage ()) then
