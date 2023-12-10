@@ -1,7 +1,3 @@
-The GitHub README you're envisioning would present an ASCII art logo followed by a description of a command-line interface (CLI) tool named 'got'. This tool appears to offer a variety of version control functionalities, similar to Git. Here's how the README could be structured:
-
----
-
 # `got` - A Command-Line Interface Tool
 
 ```
