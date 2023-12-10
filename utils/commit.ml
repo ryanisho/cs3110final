@@ -131,10 +131,8 @@ let retrieve_all_commit_filenames () : Filesystem.filename list =
   |> Sys.readdir |> Array.to_list |> List.sort compare
 
 let clear_commit_history () =
-  let commit_files = retrieve_all_commit_filenames () in
+  let commit_filenames = retrieve_all_commit_filenames () in
   List.iter
-    (fun filename ->
-      try Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
-      with Sys_error msg ->
-        print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg))
-    commit_files
+    (fun filename -> Sys.remove (Filesystem.Repo.commit_dir () ^ filename))
+    commit_filenames;
+  Printf.printf "Clearing commit history...\n"
