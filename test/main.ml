@@ -1,5 +1,6 @@
 open OUnit2
 open Commands
+
 exception Got_initialized of string
 
 (* helper test functions *)
@@ -17,8 +18,8 @@ let test_commit messages expected_message _ =
   let contains_message =
     String.contains result ':'
     && String.sub result
-      (String.index result ':' + 3)
-      (String.length expected_message)
+         (String.index result ':' + 3)
+         (String.length expected_message)
        = expected_message
   in
   assert_equal true (starts_with_committed && contains_message)
@@ -32,7 +33,8 @@ let test_init_new _ =
 
 let test_init_exists _ =
   let result = Commands.Init.run [] () in
-  assert_equal result "fatal: a got version-control system already exists in the directory.";
+  assert_equal result
+    "fatal: a got version-control system already exists in the directory.";
   ()
 
 let test_log expected_log_entries _ =
@@ -45,35 +47,35 @@ let commit_and_get_log_entry message =
   let _ = Commands.Commit.run [ message ] in
   match Utils.Commit.retrieve_latest_commit_filename () with
   | Some filename ->
-    let commit = Utils.Commit.fetch_commit filename in
-    "[" ^ commit.timestamp ^ "] " ^ message (* Construct the log entry *)
+      let commit = Utils.Commit.fetch_commit filename in
+      "[" ^ commit.timestamp ^ "] " ^ message (* Construct the log entry *)
   | None -> failwith "No commit found"
 
 let add =
   [
     (* no files *)
     ( "test with no files" >:: fun _ ->
-          let result = Commands.Add.run [] in
-          assert_equal "No file added." result );
+      let result = Commands.Add.run [] in
+      assert_equal "No file added." result );
     (* variation testing *)
     "test with one file" >:: test_add [ "../test/test/docs/apples.txt" ];
     "test with multiple files"
     >:: test_add
-      [ "../test/test/docs/apples.txt"; "../test/test/docs/loremipsum.txt" ];
+          [ "../test/test/docs/apples.txt"; "../test/test/docs/loremipsum.txt" ];
     "test with images" >:: test_add [ "../test/test/img/james.png" ];
     "test with multiple images"
     >:: test_add [ "../test/test/img/james.png"; "../test/test/img/chris.png" ];
     "test with audio" >:: test_add [ "../test/test/audio/river.mp3" ];
     "test with multiple audio"
     >:: test_add
-      [ "../test/test/audio/river.mp3"; "../test/test/audio/walking.mp3" ];
+          [ "../test/test/audio/river.mp3"; "../test/test/audio/walking.mp3" ];
     "test with images and audio and text"
     >:: test_add
-      [
-        "../test/test/docs/apples.txt";
-        "../test/test/img/james.png";
-        "../test/test/audio/river.mp3";
-      ];
+          [
+            "../test/test/docs/apples.txt";
+            "../test/test/img/james.png";
+            "../test/test/audio/river.mp3";
+          ];
     (* extension variability testing *)
     (* Text Files *)
     "test with Markdown file" >:: test_add [ "../test/test/docs/document.md" ];
@@ -162,15 +164,15 @@ let add =
     (* Mixed File Types in a Single Test *)
     "test with mixed code files"
     >:: test_add
-      [ "../test/test/code/script.py"; "../test/test/code/script.rb" ];
+          [ "../test/test/code/script.py"; "../test/test/code/script.rb" ];
     "test with mixed data files"
     >:: test_add
-      [ "../test/test/docs/data.csv"; "../test/test/docs/sample2.xlsx" ];
+          [ "../test/test/docs/data.csv"; "../test/test/docs/sample2.xlsx" ];
     "test with mixed image files"
     >:: test_add [ "../test/test/img/cat.jpeg"; "../test/test/img/compass.svg" ];
     "test with mixed document files"
     >:: test_add
-      [ "../test/test/docs/sample.docx"; "../test/test/docs/sample1.pptx" ];
+          [ "../test/test/docs/sample.docx"; "../test/test/docs/sample1.pptx" ];
     "test with mixed web files"
     >:: test_add [ "../test/test/code/page.html"; "../test/test/code/app.js" ];
     (* Virtual Machine and Container Files *)
@@ -193,35 +195,35 @@ let add =
     (* Combination of Diverse File Types *)
     "test with various script files"
     >:: test_add
-      [
-        "../test/test/application/sample1.sh"; "../test/test/code/script.py";
-      ];
+          [
+            "../test/test/application/sample1.sh"; "../test/test/code/script.py";
+          ];
     "test with multiple config files"
     >:: test_add
-      [ "../test/test/config/nginx.conf"; "../test/test/config/.gitconfig" ];
+          [ "../test/test/config/nginx.conf"; "../test/test/config/.gitconfig" ];
     "test with mixed media files"
     >:: test_add
-      [ "../test/test/video/sample.mp4"; "../test/test/audio/river.mp3" ];
+          [ "../test/test/video/sample.mp4"; "../test/test/audio/river.mp3" ];
     "test with various document types"
     >:: test_add
-      [ "../test/test/docs/file.pdf"; "../test/test/docs/sample.epub" ];
+          [ "../test/test/docs/file.pdf"; "../test/test/docs/sample.epub" ];
     "test with assorted data files"
     >:: test_add
-      [ "../test/test/data/config.json"; "../test/test/docs/data.csv" ];
+          [ "../test/test/data/config.json"; "../test/test/docs/data.csv" ];
     "test with multiple archive files"
     >:: test_add
-      [ "../test/test/archive/file.zip"; "../test/test/archive/sample.tar" ];
+          [ "../test/test/archive/file.zip"; "../test/test/archive/sample.tar" ];
     "test with various code files"
     >:: test_add [ "../test/test/code/app.js"; "../test/test/code/script.py" ];
     "test with mixed design files"
     >:: test_add
-      [
-        "../test/test/design/sample.psd";
-        "../test/test/design/sample.sketch";
-      ];
+          [
+            "../test/test/design/sample.psd";
+            "../test/test/design/sample.sketch";
+          ];
     "test with various virtual machine files"
     >:: test_add
-      [ "../test/test/vm/virtualbox.vdi"; "../test/test/vm/vmware.vmdk" ];
+          [ "../test/test/vm/virtualbox.vdi"; "../test/test/vm/vmware.vmdk" ];
   ]
 
 let commit =
@@ -232,12 +234,12 @@ let commit =
     >:: test_commit [ "Initial commit" ] "Initial commit";
     "test commit with complex message"
     >:: test_commit
-      [ "Added new feature with multiple fixes" ]
-      "Added new feature with multiple fixes";
+          [ "Added new feature with multiple fixes" ]
+          "Added new feature with multiple fixes";
     "test commit with special characters"
     >:: test_commit
-      [ "No special characters: !@#$%^&*()_+" ]
-      "No special characters: !@#$%^&*()_+";
+          [ "No special characters: !@#$%^&*()_+" ]
+          "No special characters: !@#$%^&*()_+";
     "test commit with very long message"
     >:: test_commit [ String.make 255 'a' ] (String.make 255 'a');
     "test commit with multiline message"
@@ -245,8 +247,8 @@ let commit =
     "test commit with empty message and no changes" >:: test_commit [ "" ] "";
     "test commit with escape characters in message"
     >:: test_commit
-      [ "Fix line breaks\nand tabs\t" ]
-      "Fix line breaks\nand tabs\t";
+          [ "Fix line breaks\nand tabs\t" ]
+          "Fix line breaks\nand tabs\t";
     "test commit with excessively long message"
     >:: test_commit [ String.make 1000 'b' ] (String.make 255 'b');
     "test commit with invalid characters in message"
@@ -261,75 +263,75 @@ let commit =
     >:: test_commit [ "     " ] "     ";
     "test commit with quotation marks in message"
     >:: test_commit
-      [ "Added 'new feature' module" ]
-      "Added 'new feature' module";
+          [ "Added 'new feature' module" ]
+          "Added 'new feature' module";
     "test commit with extremely short message" >:: test_commit [ "a" ] "a";
     "test commit with git command in message"
     >:: test_commit
-      [ "Fixed issue; run `git pull` after update" ]
-      "Fixed issue; run `git pull` after update";
+          [ "Fixed issue; run `git pull` after update" ]
+          "Fixed issue; run `git pull` after update";
     "test commit with emojis"
     >:: test_commit [ "🐛 Fixed bug in code" ] "🐛 Fixed bug in code";
     "test commit with markdown-like syntax"
     >:: test_commit
-      [ "* Added new feature\n* Fixed bug" ]
-      "* Added new feature\n* Fixed bug";
+          [ "* Added new feature\n* Fixed bug" ]
+          "* Added new feature\n* Fixed bug";
     "test commit with HTML-like tags"
     >:: test_commit
-      [ "<fix> corrected minor issue </fix>" ]
-      "<fix> corrected minor issue </fix>";
+          [ "<fix> corrected minor issue </fix>" ]
+          "<fix> corrected minor issue </fix>";
     "test commit with backslashes in message"
     >:: test_commit
-      [ "Fixed file paths using \\ paths" ]
-      "Fixed file paths using \\ paths";
+          [ "Fixed file paths using \\ paths" ]
+          "Fixed file paths using \\ paths";
     "test commit with environment variables in message"
     >:: test_commit
-      [ "Updated PATH in $HOME/.bashrc" ]
-      "Updated PATH in $HOME/.bashrc";
+          [ "Updated PATH in $HOME/.bashrc" ]
+          "Updated PATH in $HOME/.bashrc";
     "test commit with null character in message"
     >:: test_commit [ "Null char \000 present" ] "Null char \000 present";
     "test commit with only numeric characters in message"
     >:: test_commit [ "1234567890" ] "1234567890";
     "test commit with code snippet in message"
     >:: test_commit
-      [ "Refactored loop: for(i = 0; i < n; i++) {...}" ]
-      "Refactored loop: for(i = 0; i < n; i++) {...}";
+          [ "Refactored loop: for(i = 0; i < n; i++) {...}" ]
+          "Refactored loop: for(i = 0; i < n; i++) {...}";
     "test commit with mixed case message"
     >:: test_commit
-      [ "FiXeD Case Sensitivity ISSUE" ]
-      "FiXeD Case Sensitivity ISSUE";
+          [ "FiXeD Case Sensitivity ISSUE" ]
+          "FiXeD Case Sensitivity ISSUE";
     "test commit with SQL-like syntax in message"
     >:: test_commit
-      [ "Updated DB: SELECT * FROM users;" ]
-      "Updated DB: SELECT * FROM users;";
+          [ "Updated DB: SELECT * FROM users;" ]
+          "Updated DB: SELECT * FROM users;";
     "test commit with XML content in message"
     >:: test_commit
-      [ "<xml><update>123</update></xml>" ]
-      "<xml><update>123</update></xml>";
+          [ "<xml><update>123</update></xml>" ]
+          "<xml><update>123</update></xml>";
     "test commit with timestamp in message"
     >:: test_commit
-      [ "Backup created on 2023-03-15 10:00:00 UTC" ]
-      "Backup created on 2023-03-15 10:00:00 UTC";
+          [ "Backup created on 2023-03-15 10:00:00 UTC" ]
+          "Backup created on 2023-03-15 10:00:00 UTC";
     "test commit with URL in message"
     >:: test_commit
-      [ "Fixed issue, see http://example.com for details" ]
-      "Fixed issue, see http://example.com for details";
+          [ "Fixed issue, see http://example.com for details" ]
+          "Fixed issue, see http://example.com for details";
     "test commit with brackets in message"
     >:: test_commit
-      [ "Fixed issue (see issue #123)" ]
-      "Fixed issue (see issue #123)";
+          [ "Fixed issue (see issue #123)" ]
+          "Fixed issue (see issue #123)";
     "test commit with indented message"
     >:: test_commit
-      [ "    Indented message for formatting" ]
-      "    Indented message for formatting";
+          [ "    Indented message for formatting" ]
+          "    Indented message for formatting";
     "test commit with bullet points in message"
     >:: test_commit
-      [ "- Added feature A\n- Fixed bug B" ]
-      "- Added feature A\n- Fixed bug B";
+          [ "- Added feature A\n- Fixed bug B" ]
+          "- Added feature A\n- Fixed bug B";
     "test commit with hash character in message"
     >:: test_commit
-      [ "Updated README #documentation" ]
-      "Updated README #documentation";
+          [ "Updated README #documentation" ]
+          "Updated README #documentation";
     "test commit with only spaces in message"
     >:: test_commit [ "     " ] "     ";
     "test commit with control characters in message"
@@ -338,24 +340,24 @@ let commit =
     >:: test_commit [ "Duplicate message" ] "Duplicate message";
     "test commit with mathematical symbols in message"
     >:: test_commit
-      [ "Improved efficiency by 50%" ]
-      "Improved efficiency by 50%";
+          [ "Improved efficiency by 50%" ]
+          "Improved efficiency by 50%";
     "test commit with file paths in message"
     >:: test_commit
-      [ "Updated file at /src/main.c" ]
-      "Updated file at /src/main.c";
+          [ "Updated file at /src/main.c" ]
+          "Updated file at /src/main.c";
     "test commit with conditional phrase in message"
     >:: test_commit
-      [ "If user is admin, allow access to settings" ]
-      "If user is admin, allow access to settings";
+          [ "If user is admin, allow access to settings" ]
+          "If user is admin, allow access to settings";
     "test commit with various date formats in message"
     >:: test_commit
-      [ "Event date changed: 03/15/2023 to April 5th, 2023" ]
-      "Event date changed: 03/15/2023 to April 5th, 2023";
+          [ "Event date changed: 03/15/2023 to April 5th, 2023" ]
+          "Event date changed: 03/15/2023 to April 5th, 2023";
     "test commit with multiple languages in message"
     >:: test_commit
-      [ "Initial commit - 初期コミット - ابتدائی کمیٹ" ]
-      "Initial commit - 初期コミット - ابتدائی کمیٹ";
+          [ "Initial commit - 初期コミット - ابتدائی کمیٹ" ]
+          "Initial commit - 初期コミット - ابتدائی کمیٹ";
     "test commit with repeated messages"
     >:: test_commit [ "Repeat commit" ] "Repeat commit";
     "test commit with only numeric characters and special symbols"
@@ -364,44 +366,44 @@ let commit =
     >:: test_commit [ "Fi#x1! @Issue (Resolved)" ] "Fi#x1! @Issue (Resolved)";
     "test commit with incomplete escape sequences"
     >:: test_commit
-      [ "Incomplete escape \\ sequence" ]
-      "Incomplete escape \\ sequence";
+          [ "Incomplete escape \\ sequence" ]
+          "Incomplete escape \\ sequence";
     "test commit with only special characters"
     >:: test_commit
-      [ "!@#$%^&*()_+-=[]{};':\",.<>/?`~" ]
-      "!@#$%^&*()_+-=[]{};':\",.<>/?`~";
+          [ "!@#$%^&*()_+-=[]{};':\",.<>/?`~" ]
+          "!@#$%^&*()_+-=[]{};':\",.<>/?`~";
     "test commit with a very short message repeated many times"
     >:: test_commit
-      [ String.concat "" (Array.to_list (Array.make 100 "x")) ]
-      (String.concat "" (Array.to_list (Array.make 100 "x")));
+          [ String.concat "" (Array.to_list (Array.make 100 "x")) ]
+          (String.concat "" (Array.to_list (Array.make 100 "x")));
     "test commit with network paths"
     >:: test_commit
-      [ "Updated network path \\\\network\\shared\\file" ]
-      "Updated network path \\\\network\\shared\\file";
+          [ "Updated network path \\\\network\\shared\\file" ]
+          "Updated network path \\\\network\\shared\\file";
     "test commit with URLs"
     >:: test_commit
-      [ "See documentation at https://example.com/docs" ]
-      "See documentation at https://example.com/docs";
+          [ "See documentation at https://example.com/docs" ]
+          "See documentation at https://example.com/docs";
     "test commit with only numbers and punctuation"
     >:: test_commit [ "1234567890,.;'[]!" ] "1234567890,.;'[]!";
     "test commit with code snippet"
     >:: test_commit
-      [ "Fix: `if (x < 10) { return x; }` in script.js" ]
-      "Fix: `if (x < 10) { return x; }` in script.js";
+          [ "Fix: `if (x < 10) { return x; }` in script.js" ]
+          "Fix: `if (x < 10) { return x; }` in script.js";
     "test commit with automated message"
     >:: test_commit [ "Automated build: success" ] "Automated build: success";
     "test commit with multiline varied content"
     >:: test_commit
-      [ "Line 1\n12345\nSpecial: *&^%$" ]
-      "Line 1\n12345\nSpecial: *&^%$";
+          [ "Line 1\n12345\nSpecial: *&^%$" ]
+          "Line 1\n12345\nSpecial: *&^%$";
     "test commit with different date formats"
     >:: test_commit
-      [ "Event on 2023-04-01, April 1st, 01/04/2023" ]
-      "Event on 2023-04-01, April 1st, 01/04/2023";
+          [ "Event on 2023-04-01, April 1st, 01/04/2023" ]
+          "Event on 2023-04-01, April 1st, 01/04/2023";
     "test commit with file extensions"
     >:: test_commit
-      [ "Updated README.md and script.py" ]
-      "Updated README.md and script.py";
+          [ "Updated README.md and script.py" ]
+          "Updated README.md and script.py";
     "test commit with JSON string"
     >:: test_commit [ "{\"key\": \"value\"}" ] "{\"key\": \"value\"}";
     "test commit with XML string"
@@ -410,314 +412,317 @@ let commit =
     >:: test_commit [ "fix fix fix bug" ] "fix fix fix bug";
     "test commit with tabulated data"
     >:: test_commit
-      [ "Data:\nName\tAge\nAlice\t30\nBob\t25" ]
-      "Data:\nName\tAge\nAlice\t30\nBob\t25";
+          [ "Data:\nName\tAge\nAlice\t30\nBob\t25" ]
+          "Data:\nName\tAge\nAlice\t30\nBob\t25";
     "test commit with file system commands"
     >:: test_commit
-      [ "Updated script: `rm -rf /tmp/*`" ]
-      "Updated script: `rm -rf /tmp/*`";
+          [ "Updated script: `rm -rf /tmp/*`" ]
+          "Updated script: `rm -rf /tmp/*`";
     "test commit with cross-platform file paths"
     >:: test_commit
-      [ "Fixed paths: C:\\Users\\user and /home/user" ]
-      "Fixed paths: C:\\Users\\user and /home/user";
+          [ "Fixed paths: C:\\Users\\user and /home/user" ]
+          "Fixed paths: C:\\Users\\user and /home/user";
     "test commit with historical references"
     >:: test_commit
-      [ "Reverted changes from 1920-1930" ]
-      "Reverted changes from 1920-1930";
+          [ "Reverted changes from 1920-1930" ]
+          "Reverted changes from 1920-1930";
     "test commit with regular expressions"
     >:: test_commit
-      [ "Regex update: ^[a-zA-Z0-9]+$" ]
-      "Regex update: ^[a-zA-Z0-9]+$";
+          [ "Regex update: ^[a-zA-Z0-9]+$" ]
+          "Regex update: ^[a-zA-Z0-9]+$";
     "test commit with pseudo-code"
     >:: test_commit
-      [ "Algorithm: if x > y then x else y" ]
-      "Algorithm: if x > y then x else y";
+          [ "Algorithm: if x > y then x else y" ]
+          "Algorithm: if x > y then x else y";
     "test commit with currency symbols"
     >:: test_commit
-      [ "Prices updated: $100, €80, £70" ]
-      "Prices updated: $100, €80, £70";
+          [ "Prices updated: $100, €80, £70" ]
+          "Prices updated: $100, €80, £70";
     "test commit with scientific notation"
     >:: test_commit
-      [ "Adjusted value: 6.02e23 particles/mole" ]
-      "Adjusted value: 6.02e23 particles/mole";
+          [ "Adjusted value: 6.02e23 particles/mole" ]
+          "Adjusted value: 6.02e23 particles/mole";
     "test commit with hashtags and mentions"
     >:: test_commit
-      [ "New feature #release @devteam" ]
-      "New feature #release @devteam";
+          [ "New feature #release @devteam" ]
+          "New feature #release @devteam";
     "test commit with palindrome message"
     >:: test_commit
-      [ "A man a plan a canal Panama" ]
-      "A man a plan a canal Panama";
+          [ "A man a plan a canal Panama" ]
+          "A man a plan a canal Panama";
     "test commit with chemical formulas"
     >:: test_commit
-      [ "Updated reaction: H2O + CO2 -> H2CO3" ]
-      "Updated reaction: H2O + CO2 -> H2CO3";
+          [ "Updated reaction: H2O + CO2 -> H2CO3" ]
+          "Updated reaction: H2O + CO2 -> H2CO3";
     "test commit with literary references"
     >:: test_commit
-      [ "Bug fix based on 'To Kill a Mockingbird'" ]
-      "Bug fix based on 'To Kill a Mockingbird'";
+          [ "Bug fix based on 'To Kill a Mockingbird'" ]
+          "Bug fix based on 'To Kill a Mockingbird'";
     "test commit with VINs"
     >:: test_commit
-      [ "Updated vehicle data: VIN 1HGCM82633A004352" ]
-      "Updated vehicle data: VIN 1HGCM82633A004352";
+          [ "Updated vehicle data: VIN 1HGCM82633A004352" ]
+          "Updated vehicle data: VIN 1HGCM82633A004352";
     "test commit with political statements"
     >:: test_commit
-      [ "Refactor based on 1990's economic policies" ]
-      "Refactor based on 1990's economic policies";
+          [ "Refactor based on 1990's economic policies" ]
+          "Refactor based on 1990's economic policies";
     "test commit with pseudonyms"
     >:: test_commit
-      [ "Code review by The Architect" ]
-      "Code review by The Architect";
+          [ "Code review by The Architect" ]
+          "Code review by The Architect";
     "test commit with mathematical expressions"
     >:: test_commit
-      [ "Optimized algorithm for x^2 + y^2 = z^2" ]
-      "Optimized algorithm for x^2 + y^2 = z^2";
+          [ "Optimized algorithm for x^2 + y^2 = z^2" ]
+          "Optimized algorithm for x^2 + y^2 = z^2";
     "test commit with multiple programming languages"
     >:: test_commit
-      [ "Fixed Python and JS scripts: def func(), function() {}" ]
-      "Fixed Python and JS scripts: def func(), function() {}";
+          [ "Fixed Python and JS scripts: def func(), function() {}" ]
+          "Fixed Python and JS scripts: def func(), function() {}";
     "test commit with recipes"
     >:: test_commit
-      [ "Updated recipe: 2 cups flour, 1 cup sugar" ]
-      "Updated recipe: 2 cups flour, 1 cup sugar";
+          [ "Updated recipe: 2 cups flour, 1 cup sugar" ]
+          "Updated recipe: 2 cups flour, 1 cup sugar";
     "test commit with music references"
     >:: test_commit
-      [ "Interface redesign inspired by Van Gogh's Starry Night" ]
-      "Interface redesign inspired by Van Gogh's Starry Night";
+          [ "Interface redesign inspired by Van Gogh's Starry Night" ]
+          "Interface redesign inspired by Van Gogh's Starry Night";
     "test commit with astronomical data"
     >:: test_commit
-      [ "New feature: Mars Rover data processing module" ]
-      "New feature: Mars Rover data processing module";
+          [ "New feature: Mars Rover data processing module" ]
+          "New feature: Mars Rover data processing module";
     "test commit with legal jargon"
     >:: test_commit
-      [ "Updated terms and conditions as per Clause 18B of the Agreement." ]
-      "Updated terms and conditions as per Clause 18B of the Agreement.";
+          [ "Updated terms and conditions as per Clause 18B of the Agreement." ]
+          "Updated terms and conditions as per Clause 18B of the Agreement.";
     "test commit with professional jargon"
     >:: test_commit
-      [ "Refactored the ETL pipeline for better data warehousing." ]
-      "Refactored the ETL pipeline for better data warehousing.";
+          [ "Refactored the ETL pipeline for better data warehousing." ]
+          "Refactored the ETL pipeline for better data warehousing.";
     "test commit with multiple time zones"
     >:: test_commit
-      [ "Event times updated for EST, GMT, and IST." ]
-      "Event times updated for EST, GMT, and IST.";
+          [ "Event times updated for EST, GMT, and IST." ]
+          "Event times updated for EST, GMT, and IST.";
     "test commit with complex algorithm pseudocode"
     >:: test_commit
-      [ "Optimized sorting: while n > 1, swap elements if in wrong order" ]
-      "Optimized sorting: while n > 1, swap elements if in wrong order";
+          [ "Optimized sorting: while n > 1, swap elements if in wrong order" ]
+          "Optimized sorting: while n > 1, swap elements if in wrong order";
     "test commit with philosophical quotes"
     >:: test_commit
-      [ "Code refactor inspired by 'I think, therefore I am' - Descartes" ]
-      "Code refactor inspired by 'I think, therefore I am' - Descartes";
+          [ "Code refactor inspired by 'I think, therefore I am' - Descartes" ]
+          "Code refactor inspired by 'I think, therefore I am' - Descartes";
     "test commit with mathematical symbols"
     >:: test_commit
-      [ "Updated calculation: ∫(x²)dx from 0 to 1" ]
-      "Updated calculation: ∫(x²)dx from 0 to 1";
+          [ "Updated calculation: ∫(x²)dx from 0 to 1" ]
+          "Updated calculation: ∫(x²)dx from 0 to 1";
     "test commit with design terms"
     >:: test_commit
-      [ "Redesigned UI based on Bauhaus principles." ]
-      "Redesigned UI based on Bauhaus principles.";
+          [ "Redesigned UI based on Bauhaus principles." ]
+          "Redesigned UI based on Bauhaus principles.";
     "test commit with scientific experiment description"
     >:: test_commit
-      [
-        "Fixed the data analysis module: titration experiment with NaOH \
-         and HCl.";
-      ]
-      "Fixed the data analysis module: titration experiment with NaOH and \
-       HCl.";
+          [
+            "Fixed the data analysis module: titration experiment with NaOH \
+             and HCl.";
+          ]
+          "Fixed the data analysis module: titration experiment with NaOH and \
+           HCl.";
     "test commit with Morse code"
     >:: test_commit
-      [ "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. ." ]
-      "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. .";
+          [ "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. ." ]
+          "-- . ... ... .- --. .  .. -.  -- --- .-. ... .  -.-. --- -.. .";
     "test commit with binary code"
     >:: test_commit
-      [ "Fixed issue 01010100 01000001 01000010" ]
-      "Fixed issue 01010100 01000001 01000010";
+          [ "Fixed issue 01010100 01000001 01000010" ]
+          "Fixed issue 01010100 01000001 01000010";
     "test commit with reverse order message"
     >:: test_commit [ "egasseM esreveR" ] "egasseM esreveR";
     "test commit with geographical coordinates"
     >:: test_commit
-      [ "Location tagged at 37.7749° N, 122.4194° W" ]
-      "Location tagged at 37.7749° N, 122.4194° W";
+          [ "Location tagged at 37.7749° N, 122.4194° W" ]
+          "Location tagged at 37.7749° N, 122.4194° W";
     "test commit with hexadecimal values"
     >:: test_commit
-      [ "Color update: #FF5733, #4A69BD" ]
-      "Color update: #FF5733, #4A69BD";
+          [ "Color update: #FF5733, #4A69BD" ]
+          "Color update: #FF5733, #4A69BD";
     "test commit with scientific terms"
     >:: test_commit
-      [ "Updated algorithm to consider homeostasis and metabolism" ]
-      "Updated algorithm to consider homeostasis and metabolism";
+          [ "Updated algorithm to consider homeostasis and metabolism" ]
+          "Updated algorithm to consider homeostasis and metabolism";
     "test commit with multi-paragraph message"
     >:: test_commit
-      [ "First paragraph.\n\nSecond paragraph." ]
-      "First paragraph.\n\nSecond paragraph.";
+          [ "First paragraph.\n\nSecond paragraph." ]
+          "First paragraph.\n\nSecond paragraph.";
     "test commit with pseudo-random strings"
     >:: test_commit
-      [ "Random string: asd93#d_!2kD" ]
-      "Random string: asd93#d_!2kD";
+          [ "Random string: asd93#d_!2kD" ]
+          "Random string: asd93#d_!2kD";
     "test commit with fictional language"
     >:: test_commit
-      [ "Klingon code update: Qapla' batlh je" ]
-      "Klingon code update: Qapla' batlh je";
+          [ "Klingon code update: Qapla' batlh je" ]
+          "Klingon code update: Qapla' batlh je";
     "test commit with anagrams"
     >:: test_commit [ "Astronomer -> Moon starer" ] "Astronomer -> Moon starer";
     "test commit with technical specifications"
     >:: test_commit
-      [ "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB" ]
-      "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB";
+          [ "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB" ]
+          "Specs updated: CPU 3.5GHz, RAM 16GB, SSD 512GB";
     "test commit with recipe instructions"
     >:: test_commit
-      [ "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins" ]
-      "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins";
+          [ "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins" ]
+          "Recipe update: Mix 2 cups flour, 1 cup water, bake for 20 mins";
     "test commit with non-standard formatting"
     >:: test_commit
-      [ "Markdown update: **Bold**, *Italic*, `Code`" ]
-      "Markdown update: **Bold**, *Italic*, `Code`";
+          [ "Markdown update: **Bold**, *Italic*, `Code`" ]
+          "Markdown update: **Bold**, *Italic*, `Code`";
+    "test commit with fictional characters"
+    >:: test_commit [ "Updated character: Frodo Baggins" ];
   ]
+
 let log =
   [
     ( "test log with many commits" >:: fun _ ->
-          Utils.Commit.clear_commit_history ();
-          let log_entry1 = commit_and_get_log_entry "Commit 1" in
-          Unix.sleepf 0.01;
-          let log_entry2 = commit_and_get_log_entry "Commit 2" in
-          Unix.sleepf 0.01;
-          let log_entry3 = commit_and_get_log_entry "Commit 3" in
-          Unix.sleepf 0.01;
-          let log_entry4 = commit_and_get_log_entry "Commit 4" in
-          Unix.sleepf 0.01;
-          let log_entry5 = commit_and_get_log_entry "Commit 5" in
-          Unix.sleepf 0.01;
-          let log_entry6 = commit_and_get_log_entry "Commit 6" in
-          Unix.sleepf 0.01;
-          let log_entry7 = commit_and_get_log_entry "Commit 7" in
-          Unix.sleepf 0.01;
-          let log_entry8 = commit_and_get_log_entry "Commit 8" in
-          Unix.sleepf 0.01;
-          let log_entry9 = commit_and_get_log_entry "Commit 9" in
-          Unix.sleepf 0.01;
-          let log_entry10 = commit_and_get_log_entry "Commit 10" in
-          Unix.sleepf 0.01;
-          let log_entry11 = commit_and_get_log_entry "Commit 11" in
-          Unix.sleepf 0.01;
-          let log_entry12 = commit_and_get_log_entry "Commit 12" in
-          Unix.sleepf 0.01;
-          let log_entry13 = commit_and_get_log_entry "Commit 13" in
-          Unix.sleepf 0.01;
-          let log_entry14 = commit_and_get_log_entry "Commit 14" in
-          Unix.sleepf 0.01;
-          let log_entry15 = commit_and_get_log_entry "Commit 15" in
-          Unix.sleepf 0.01;
-          let log_entry16 = commit_and_get_log_entry "Commit 16" in
-          Unix.sleepf 0.01;
-          let log_entry17 = commit_and_get_log_entry "Commit 17" in
-          Unix.sleepf 0.01;
-          let log_entry18 = commit_and_get_log_entry "Commit 18" in
-          Unix.sleepf 0.01;
-          let log_entry19 = commit_and_get_log_entry "Commit 19" in
-          Unix.sleepf 0.01;
-          let log_entry20 = commit_and_get_log_entry "Commit 20" in
-          Unix.sleepf 0.01;
-          let log_entry21 = commit_and_get_log_entry "Commit 21" in
-          Unix.sleepf 0.01;
-          let log_entry22 = commit_and_get_log_entry "Commit 22" in
-          Unix.sleepf 0.01;
-          let log_entry23 = commit_and_get_log_entry "Commit 23" in
-          Unix.sleepf 0.01;
-          let log_entry24 = commit_and_get_log_entry "Commit 24" in
-          Unix.sleepf 0.01;
-          let log_entry25 = commit_and_get_log_entry "Commit 25" in
-          Unix.sleepf 0.01;
-          let log_entry26 = commit_and_get_log_entry "Commit 26" in
-          Unix.sleepf 0.01;
-          let log_entry27 = commit_and_get_log_entry "Commit 27" in
-          Unix.sleepf 0.01;
-          let log_entry28 = commit_and_get_log_entry "Commit 28" in
-          Unix.sleepf 0.01;
-          let log_entry29 = commit_and_get_log_entry "Commit 29" in
-          Unix.sleepf 0.01;
-          let log_entry30 = commit_and_get_log_entry "Commit 30" in
-          Unix.sleepf 0.01;
-          let log_entry31 = commit_and_get_log_entry "Commit 31" in
-          Unix.sleepf 0.01;
-          let log_entry32 = commit_and_get_log_entry "Commit 32" in
-          Unix.sleepf 0.01;
-          let log_entry33 = commit_and_get_log_entry "Commit 33" in
-          Unix.sleepf 0.01;
-          let log_entry34 = commit_and_get_log_entry "Commit 34" in
-          Unix.sleepf 0.01;
-          let log_entry35 = commit_and_get_log_entry "Commit 35" in
-          Unix.sleepf 0.01;
-          let log_entry36 = commit_and_get_log_entry "Commit 36" in
-          Unix.sleepf 0.01;
-          let log_entry37 = commit_and_get_log_entry "Commit 37" in
-          Unix.sleepf 0.01;
-          let log_entry38 = commit_and_get_log_entry "Commit 38" in
-          Unix.sleepf 0.01;
-          let log_entry39 = commit_and_get_log_entry "Commit 39" in
-          Unix.sleepf 0.01;
-          let log_entry40 = commit_and_get_log_entry "Commit 40" in
-          Unix.sleepf 0.01;
-          let log_entry41 = commit_and_get_log_entry "Commit 41" in
-          Unix.sleepf 0.01;
-          let log_entry42 = commit_and_get_log_entry "Commit 42" in
-          Unix.sleepf 0.01;
-          let log_entry43 = commit_and_get_log_entry "Commit 43" in
-          Unix.sleepf 0.01;
-          let log_entry44 = commit_and_get_log_entry "Commit 44" in
-          Unix.sleepf 0.01;
-          let log_entry45 = commit_and_get_log_entry "Commit 45" in
-          Unix.sleepf 0.01;
-          let log_entry46 = commit_and_get_log_entry "Commit 46" in
-          Unix.sleepf 0.01;
-          let log_entry47 = commit_and_get_log_entry "Commit 47" in
-          Unix.sleepf 0.01;
-          let log_entry48 = commit_and_get_log_entry "Commit 48" in
-          Unix.sleepf 0.01;
-          let log_entry49 = commit_and_get_log_entry "Commit 49" in
-          Unix.sleepf 0.01;
-          let log_entry50 = commit_and_get_log_entry "Commit 50" in
-          Unix.sleepf 0.01;
-          let log_entry51 = commit_and_get_log_entry "Commit 51" in
-          Unix.sleepf 0.01;
-          let log_entry52 = commit_and_get_log_entry "Commit 52" in
-          Unix.sleepf 0.01;
-          let log_entry53 = commit_and_get_log_entry "Commit 53" in
-          Unix.sleepf 0.01;
-          let log_entry54 = commit_and_get_log_entry "Commit 54" in
-          Unix.sleepf 0.01;
-          let log_entry55 = commit_and_get_log_entry "Commit 55" in
-          Unix.sleepf 0.01;
-          let log_entry56 = commit_and_get_log_entry "Commit 56" in
-          Unix.sleepf 0.01;
-          let log_entry57 = commit_and_get_log_entry "Commit 57" in
-          Unix.sleepf 0.01;
-          let log_entry58 = commit_and_get_log_entry "Commit 58" in
-          Unix.sleepf 0.01;
-          let log_entry59 = commit_and_get_log_entry "Commit 59" in
-          Unix.sleepf 0.01;
-          let log_entry60 = commit_and_get_log_entry "Commit 60" in
-          test_log
-            (log_entry60 ^ "\n" ^ log_entry59 ^ "\n" ^ log_entry58 ^ "\n"
-             ^ log_entry57 ^ "\n" ^ log_entry56 ^ "\n" ^ log_entry55 ^ "\n"
-             ^ log_entry54 ^ "\n" ^ log_entry53 ^ "\n" ^ log_entry52 ^ "\n"
-             ^ log_entry51 ^ "\n" ^ log_entry50 ^ "\n" ^ log_entry49 ^ "\n"
-             ^ log_entry48 ^ "\n" ^ log_entry47 ^ "\n" ^ log_entry46 ^ "\n"
-             ^ log_entry45 ^ "\n" ^ log_entry44 ^ "\n" ^ log_entry43 ^ "\n"
-             ^ log_entry42 ^ "\n" ^ log_entry41 ^ "\n" ^ log_entry40 ^ "\n"
-             ^ log_entry39 ^ "\n" ^ log_entry38 ^ "\n" ^ log_entry37 ^ "\n"
-             ^ log_entry36 ^ "\n" ^ log_entry35 ^ "\n" ^ log_entry34 ^ "\n"
-             ^ log_entry33 ^ "\n" ^ log_entry32 ^ "\n" ^ log_entry31 ^ "\n"
-             ^ log_entry30 ^ "\n" ^ log_entry29 ^ "\n" ^ log_entry28 ^ "\n"
-             ^ log_entry27 ^ "\n" ^ log_entry26 ^ "\n" ^ log_entry25 ^ "\n"
-             ^ log_entry24 ^ "\n" ^ log_entry23 ^ "\n" ^ log_entry22 ^ "\n"
-             ^ log_entry21 ^ "\n" ^ log_entry20 ^ "\n" ^ log_entry19 ^ "\n"
-             ^ log_entry18 ^ "\n" ^ log_entry17 ^ "\n" ^ log_entry16 ^ "\n"
-             ^ log_entry15 ^ "\n" ^ log_entry14 ^ "\n" ^ log_entry13 ^ "\n"
-             ^ log_entry12 ^ "\n" ^ log_entry11 ^ "\n" ^ log_entry10 ^ "\n"
-             ^ log_entry9 ^ "\n" ^ log_entry8 ^ "\n" ^ log_entry7 ^ "\n" ^ log_entry6
-             ^ "\n" ^ log_entry5 ^ "\n" ^ log_entry4 ^ "\n" ^ log_entry3 ^ "\n"
-             ^ log_entry2 ^ "\n" ^ log_entry1)
-            () );
+      Utils.Commit.clear_commit_history ();
+      let log_entry1 = commit_and_get_log_entry "Commit 1" in
+      Unix.sleepf 0.01;
+      let log_entry2 = commit_and_get_log_entry "Commit 2" in
+      Unix.sleepf 0.01;
+      let log_entry3 = commit_and_get_log_entry "Commit 3" in
+      Unix.sleepf 0.01;
+      let log_entry4 = commit_and_get_log_entry "Commit 4" in
+      Unix.sleepf 0.01;
+      let log_entry5 = commit_and_get_log_entry "Commit 5" in
+      Unix.sleepf 0.01;
+      let log_entry6 = commit_and_get_log_entry "Commit 6" in
+      Unix.sleepf 0.01;
+      let log_entry7 = commit_and_get_log_entry "Commit 7" in
+      Unix.sleepf 0.01;
+      let log_entry8 = commit_and_get_log_entry "Commit 8" in
+      Unix.sleepf 0.01;
+      let log_entry9 = commit_and_get_log_entry "Commit 9" in
+      Unix.sleepf 0.01;
+      let log_entry10 = commit_and_get_log_entry "Commit 10" in
+      Unix.sleepf 0.01;
+      let log_entry11 = commit_and_get_log_entry "Commit 11" in
+      Unix.sleepf 0.01;
+      let log_entry12 = commit_and_get_log_entry "Commit 12" in
+      Unix.sleepf 0.01;
+      let log_entry13 = commit_and_get_log_entry "Commit 13" in
+      Unix.sleepf 0.01;
+      let log_entry14 = commit_and_get_log_entry "Commit 14" in
+      Unix.sleepf 0.01;
+      let log_entry15 = commit_and_get_log_entry "Commit 15" in
+      Unix.sleepf 0.01;
+      let log_entry16 = commit_and_get_log_entry "Commit 16" in
+      Unix.sleepf 0.01;
+      let log_entry17 = commit_and_get_log_entry "Commit 17" in
+      Unix.sleepf 0.01;
+      let log_entry18 = commit_and_get_log_entry "Commit 18" in
+      Unix.sleepf 0.01;
+      let log_entry19 = commit_and_get_log_entry "Commit 19" in
+      Unix.sleepf 0.01;
+      let log_entry20 = commit_and_get_log_entry "Commit 20" in
+      Unix.sleepf 0.01;
+      let log_entry21 = commit_and_get_log_entry "Commit 21" in
+      Unix.sleepf 0.01;
+      let log_entry22 = commit_and_get_log_entry "Commit 22" in
+      Unix.sleepf 0.01;
+      let log_entry23 = commit_and_get_log_entry "Commit 23" in
+      Unix.sleepf 0.01;
+      let log_entry24 = commit_and_get_log_entry "Commit 24" in
+      Unix.sleepf 0.01;
+      let log_entry25 = commit_and_get_log_entry "Commit 25" in
+      Unix.sleepf 0.01;
+      let log_entry26 = commit_and_get_log_entry "Commit 26" in
+      Unix.sleepf 0.01;
+      let log_entry27 = commit_and_get_log_entry "Commit 27" in
+      Unix.sleepf 0.01;
+      let log_entry28 = commit_and_get_log_entry "Commit 28" in
+      Unix.sleepf 0.01;
+      let log_entry29 = commit_and_get_log_entry "Commit 29" in
+      Unix.sleepf 0.01;
+      let log_entry30 = commit_and_get_log_entry "Commit 30" in
+      Unix.sleepf 0.01;
+      let log_entry31 = commit_and_get_log_entry "Commit 31" in
+      Unix.sleepf 0.01;
+      let log_entry32 = commit_and_get_log_entry "Commit 32" in
+      Unix.sleepf 0.01;
+      let log_entry33 = commit_and_get_log_entry "Commit 33" in
+      Unix.sleepf 0.01;
+      let log_entry34 = commit_and_get_log_entry "Commit 34" in
+      Unix.sleepf 0.01;
+      let log_entry35 = commit_and_get_log_entry "Commit 35" in
+      Unix.sleepf 0.01;
+      let log_entry36 = commit_and_get_log_entry "Commit 36" in
+      Unix.sleepf 0.01;
+      let log_entry37 = commit_and_get_log_entry "Commit 37" in
+      Unix.sleepf 0.01;
+      let log_entry38 = commit_and_get_log_entry "Commit 38" in
+      Unix.sleepf 0.01;
+      let log_entry39 = commit_and_get_log_entry "Commit 39" in
+      Unix.sleepf 0.01;
+      let log_entry40 = commit_and_get_log_entry "Commit 40" in
+      Unix.sleepf 0.01;
+      let log_entry41 = commit_and_get_log_entry "Commit 41" in
+      Unix.sleepf 0.01;
+      let log_entry42 = commit_and_get_log_entry "Commit 42" in
+      Unix.sleepf 0.01;
+      let log_entry43 = commit_and_get_log_entry "Commit 43" in
+      Unix.sleepf 0.01;
+      let log_entry44 = commit_and_get_log_entry "Commit 44" in
+      Unix.sleepf 0.01;
+      let log_entry45 = commit_and_get_log_entry "Commit 45" in
+      Unix.sleepf 0.01;
+      let log_entry46 = commit_and_get_log_entry "Commit 46" in
+      Unix.sleepf 0.01;
+      let log_entry47 = commit_and_get_log_entry "Commit 47" in
+      Unix.sleepf 0.01;
+      let log_entry48 = commit_and_get_log_entry "Commit 48" in
+      Unix.sleepf 0.01;
+      let log_entry49 = commit_and_get_log_entry "Commit 49" in
+      Unix.sleepf 0.01;
+      let log_entry50 = commit_and_get_log_entry "Commit 50" in
+      Unix.sleepf 0.01;
+      let log_entry51 = commit_and_get_log_entry "Commit 51" in
+      Unix.sleepf 0.01;
+      let log_entry52 = commit_and_get_log_entry "Commit 52" in
+      Unix.sleepf 0.01;
+      let log_entry53 = commit_and_get_log_entry "Commit 53" in
+      Unix.sleepf 0.01;
+      let log_entry54 = commit_and_get_log_entry "Commit 54" in
+      Unix.sleepf 0.01;
+      let log_entry55 = commit_and_get_log_entry "Commit 55" in
+      Unix.sleepf 0.01;
+      let log_entry56 = commit_and_get_log_entry "Commit 56" in
+      Unix.sleepf 0.01;
+      let log_entry57 = commit_and_get_log_entry "Commit 57" in
+      Unix.sleepf 0.01;
+      let log_entry58 = commit_and_get_log_entry "Commit 58" in
+      Unix.sleepf 0.01;
+      let log_entry59 = commit_and_get_log_entry "Commit 59" in
+      Unix.sleepf 0.01;
+      let log_entry60 = commit_and_get_log_entry "Commit 60" in
+      test_log
+        (log_entry60 ^ "\n" ^ log_entry59 ^ "\n" ^ log_entry58 ^ "\n"
+       ^ log_entry57 ^ "\n" ^ log_entry56 ^ "\n" ^ log_entry55 ^ "\n"
+       ^ log_entry54 ^ "\n" ^ log_entry53 ^ "\n" ^ log_entry52 ^ "\n"
+       ^ log_entry51 ^ "\n" ^ log_entry50 ^ "\n" ^ log_entry49 ^ "\n"
+       ^ log_entry48 ^ "\n" ^ log_entry47 ^ "\n" ^ log_entry46 ^ "\n"
+       ^ log_entry45 ^ "\n" ^ log_entry44 ^ "\n" ^ log_entry43 ^ "\n"
+       ^ log_entry42 ^ "\n" ^ log_entry41 ^ "\n" ^ log_entry40 ^ "\n"
+       ^ log_entry39 ^ "\n" ^ log_entry38 ^ "\n" ^ log_entry37 ^ "\n"
+       ^ log_entry36 ^ "\n" ^ log_entry35 ^ "\n" ^ log_entry34 ^ "\n"
+       ^ log_entry33 ^ "\n" ^ log_entry32 ^ "\n" ^ log_entry31 ^ "\n"
+       ^ log_entry30 ^ "\n" ^ log_entry29 ^ "\n" ^ log_entry28 ^ "\n"
+       ^ log_entry27 ^ "\n" ^ log_entry26 ^ "\n" ^ log_entry25 ^ "\n"
+       ^ log_entry24 ^ "\n" ^ log_entry23 ^ "\n" ^ log_entry22 ^ "\n"
+       ^ log_entry21 ^ "\n" ^ log_entry20 ^ "\n" ^ log_entry19 ^ "\n"
+       ^ log_entry18 ^ "\n" ^ log_entry17 ^ "\n" ^ log_entry16 ^ "\n"
+       ^ log_entry15 ^ "\n" ^ log_entry14 ^ "\n" ^ log_entry13 ^ "\n"
+       ^ log_entry12 ^ "\n" ^ log_entry11 ^ "\n" ^ log_entry10 ^ "\n"
+       ^ log_entry9 ^ "\n" ^ log_entry8 ^ "\n" ^ log_entry7 ^ "\n" ^ log_entry6
+       ^ "\n" ^ log_entry5 ^ "\n" ^ log_entry4 ^ "\n" ^ log_entry3 ^ "\n"
+       ^ log_entry2 ^ "\n" ^ log_entry1)
+        () );
   ]
 
 let init =
