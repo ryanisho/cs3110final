@@ -23,13 +23,12 @@
    commits, and checking the state of the filesystem and the output of the
    `Checkout.run` function. - `Rm` Module: We manually tested this module by
    removing different files and directories, and checking the state of the
-   filesystem and the output of the `Rm.run` function. - `Reset` Module: We
-   manually tested this module by resetting the repository to different states,
-   and checking the state of the filesystem and the output of the `Reset.run`
-   function. - `Status` Module: Some parts of this module required manual
-   testing because they involve a change in color. We manually tested these
-   parts by running the `Status.run` function and visually inspecting the
-   output.
+   filesystem and the output of the `rm` function. - `Reset` Module: We manually
+   tested this module by resetting the repository to different states, and
+   checking the state of the filesystem and the output of the `reset` function.
+   - `Status` Module: Some parts of this module required manual testing because
+   they involve a change in color. We manually tested these parts by running the
+   `status` function and visually inspecting the output.
 
    This testing approach demonstrates the correctness of the system because it
    covers all the major functionality of the system. The automated tests ensure
