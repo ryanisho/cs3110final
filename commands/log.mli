@@ -1,7 +1,7 @@
 (* log.mli *)
 
-(** [log message] is a function that logs the given [message] to the console. 
-        It is used for debugging and tracking the flow of the program. *)
+(** [log message] is a function that logs the given [message] to the console. It
+    is used for debugging and tracking the flow of the program. *)
 
 val commit_to_log_entry : Utils.Commit.t -> string
 (** [commit_to_log_entry commit] converts a commit into a log entry string. *)
