@@ -78,7 +78,7 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
   let complete_changes = join_changes stage in
   let commit : t =
     {
-      timestamp = string_of_int (int_of_float (Unix.time ()));
+      timestamp = string_of_float (Unix.gettimeofday ());
       message;
       parent = retrieve_latest_commit_filename ();
       merge_parent = None;

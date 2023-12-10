@@ -1,5 +1,3 @@
-(* TOOD: encapsulate in module? *)
-
 type t = {
   hash : Hash.t;
   contents : string;

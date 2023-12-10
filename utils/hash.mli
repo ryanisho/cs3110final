@@ -1,5 +1,7 @@
 (* hash.mli *)
 
+(** This module implements a simple hash function. *)
+
 type t = string
 (** The type of hash values. *)
 

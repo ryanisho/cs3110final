@@ -1,22 +1,25 @@
 (* blob.mli *)
 
-(** Type representing a blob. *)
+(** Blobs are the basic unit of storage in the Git object model. They are
+    immutable, and are identified by their SHA-1 hash. *)
+
 type t = {
   hash : Hash.t;
   contents : string;
 }
+(** Type representing a blob. *)
 
-(** Create a blob from a file. *)
 val make_blob : string -> t
+(** Create a blob from a file. *)
 
-(** Write a blob to the blob directory. *)
 val write_blob : string -> unit
+(** Write a blob to the blob directory. *)
 
-(** Write multiple blobs to the blob directory. *)
 val write_blobs : string list -> unit
+(** Write multiple blobs to the blob directory. *)
 
-(** Retrieve a blob by its hash. Returns an option type. *)
 val get_blob : string -> string option
+(** Retrieve a blob by its hash. Returns an option type. *)
 
-(** Get the contents of a blob. Raises Failure if no such blob exists. *)
 val get_blob_contents : string -> string
+(** Get the contents of a blob. Raises Failure if no such blob exists. *)

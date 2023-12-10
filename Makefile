@@ -23,10 +23,14 @@ got:
 	dune exec bin/main.exe $(filter-out $@,$(MAKECMDGOALS))
 
 loc:
+	dune clean
 	cloc --by-file --include-lang=OCaml .
 	
 doc: 
 	dune build @doc
+
+opendoc : doc 
+	@bash opendoc.sh
 	
 # Generic rule to suppress "make: *** No rule to make target `$got-cmd'.  Stop." message
 # Note that this also suppresses real unknown targets though.

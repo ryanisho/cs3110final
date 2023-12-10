@@ -1,5 +1,7 @@
 (* commit.mli *)
 
+(** This module contains functions for working with commits. *)
+
 open Blob
 open Filesystem
 
