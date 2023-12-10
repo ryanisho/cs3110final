@@ -23,6 +23,7 @@ got:
 	dune exec bin/main.exe $(filter-out $@,$(MAKECMDGOALS))
 
 loc:
+	dune clean
 	cloc --by-file --include-lang=OCaml .
 	
 doc: 
