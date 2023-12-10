@@ -38,17 +38,17 @@ let join_changes stage =
   let curr_changes =
     List.map
       (fun (file_metadata : Stage.file_metadata) ->
-         (file_metadata.name, file_metadata.hash))
+        (file_metadata.name, file_metadata.hash))
       stage
   in
   List.fold_left
     (fun acc (file, hash) ->
-       if List.exists (fun (prev_file, _) -> prev_file = file) prev_changes then
-         List.map
-           (fun (prev_file, prev_hash) ->
-              if prev_file = file then (file, hash) else (prev_file, prev_hash))
-           acc
-       else (file, hash) :: acc)
+      if List.exists (fun (prev_file, _) -> prev_file = file) prev_changes then
+        List.map
+          (fun (prev_file, prev_hash) ->
+            if prev_file = file then (file, hash) else (prev_file, prev_hash))
+          acc
+      else (file, hash) :: acc)
     prev_changes curr_changes
 
 let write_commit (stage : Stage.t) (message : string) : string =
@@ -76,10 +76,9 @@ let get_full_commit_history () : t list =
 
 let clear_commit_history () =
   let commit_files = retrieve_all_commit_filenames () in
-  List.iter (fun filename -> 
-      try
-        Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
-      with
-      | Sys_error msg -> print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg)
-    ) commit_files
-
+  List.iter
+    (fun filename ->
+      try Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
+      with Sys_error msg ->
+        print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg))
+    commit_files

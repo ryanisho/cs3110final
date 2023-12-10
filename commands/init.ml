@@ -1,5 +1,7 @@
+type empty_command = unit -> string
+
 let run : string list -> Command.empty_command =
- fun args ->
+  fun args ->
   let base_dir =
     match args with
     | [] -> "."

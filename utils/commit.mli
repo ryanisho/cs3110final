@@ -1,5 +1,7 @@
 (* commit.mli *)
 
+(** This module contains functions for working with commits. *)
+
 open Blob
 open Filesystem
 
@@ -11,8 +13,6 @@ type t = {
   changes : (Filesystem.filename * Hash.t) list;
 }
 (** Type representing a commit. *)
-
-(** Retrieves the stage of the commit. *)
 
 val retrieve_all_commit_filenames : unit -> filename list
 (** Retrieves a list of all commit filenames in the repository. *)
@@ -42,5 +42,3 @@ val get_full_commit_history : unit -> t list
 
 val clear_commit_history : unit -> unit
 (** Clears the commit history. *)
-
-
