@@ -27,8 +27,11 @@ val write_commit : Stage.t -> string -> string
 val fetch_commit : filename -> t
 (** Fetches a commit by its timestamp. *)
 
-val fetch_latest_commit : unit -> t
+val fetch_latest_commit : unit -> t option
 (** Fetches the latest commit. *)
+
+val fetch_latest_commit_files : unit -> filename list
+(** Fetches the files in the latest commit. *)
 
 val fetch_latest_commit_changes : unit -> (filename * Hash.t) list
 (** Fetches the changes in the latest commit. *)
@@ -39,3 +42,5 @@ val get_full_commit_history : unit -> t list
 
 val clear_commit_history : unit -> unit
 (** Clears the commit history. *)
+
+
