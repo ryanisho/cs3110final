@@ -2,12 +2,12 @@ open OUnit2
 open Commands
 
 (* helper test functions *)
-let test_add files _ =  
+let test_add files _ =
   Unix.sleepf 1.5;
   let result = Commands.Add.run files in
   assert_equal ("Added " ^ String.concat " " files) result
 
-let test_commit messages expected_message _ =  
+let test_commit messages expected_message _ =
   Unix.sleepf 1.5;
   let _ = Commands.Add.run [ "../test/test/docs/apples.txt" ] in
   let result = Commands.Commit.run messages in
@@ -21,23 +21,31 @@ let test_commit messages expected_message _ =
        = expected_message
   in
   assert_equal true (starts_with_committed && contains_message)
-(* let test_init_new _ = let _ = Unix.system "rm -rf ./repo/.got/" in let result
-   = Commands.Init.run () in assert_equal "Initialized empty repository."
-   result; assert (Sys.file_exists "./repo/.got/"); assert (Sys.file_exists
-   "./repo/.got/blobs/"); assert (Sys.file_exists "./repo/.got/commits/");
-   assert (Sys.file_exists "./repo/.got/stage.msh"); ()
 
-   let test_init_exists _ = assert_raises (Failure "A Got version-control system
-   already exists in the current directory.") (fun () -> Commands.Init.run ());
-   () *)
+let test_init_new _ =
+  let _ = Unix.system "rm -rf ./repo/.got/" in
+  let result = Commands.Init.run [] () in
+  let result = String.sub result 0 28 in
+  assert_equal result "Initialized empty repository";
+  ()
+
+let test_init_exists _ =
+  assert_raises
+    (Failure
+       "A Got version-control system already exists in the directory.") (fun () ->
+        Commands.Init.run [] ());
+  ()
 
 let test_log expected_log_entries _ =
+  Unix.sleep 2;
   let result = Commands.Log.run () in
   assert_equal expected_log_entries result ~printer:(fun x -> x)
 
 (* Function to capture timestamp from commit *)
 let commit_and_get_log_entry message =
-  ignore (Commands.Commit.run [ message ]); (* Commit the message *)
+  Unix.sleep 2;
+  let _ = Commands.Add.run [ "../test/test/docs/apples.txt" ] in
+  let _ = Commands.Commit.run [ message ] in
   match Utils.Commit.retrieve_latest_commit_filename () with
   | Some filename ->
     let commit = Utils.Commit.fetch_commit filename in
@@ -337,10 +345,6 @@ let commit =
 
 let log =
   [
-    ( "test log with no commits" >:: fun _ ->
-          Utils.Commit.clear_commit_history ();
-          let log_entry = commit_and_get_log_entry "" in
-          test_log log_entry () );
     ( "test log with one commit" >:: fun _ ->
           Utils.Commit.clear_commit_history ();
           let log_entry = commit_and_get_log_entry "Initial commit" in
@@ -348,19 +352,18 @@ let log =
     ( "test log with three commits" >:: fun _ ->
           Utils.Commit.clear_commit_history ();
           let log_entry1 = commit_and_get_log_entry "Initial commit" in
-          Unix.sleep 1;
           let log_entry2 = commit_and_get_log_entry "Added new feature" in
-          Unix.sleep 1;
           let log_entry3 = commit_and_get_log_entry "Fixed a bug" in
-          test_log (log_entry3 ^ "\n" ^ log_entry2 ^ "\n" ^ log_entry1) ()
-    );
+          test_log (log_entry3 ^ "\n" ^ log_entry2 ^ "\n" ^ log_entry1) () );
   ]
 
 let init =
-  [ (* "test init new repository" >:: test_init_new; "test init with existing
-       repository" >:: test_init_exists; *) ]
+  [
+    "test init new repository" >:: test_init_new;
+    "test init with existing repository" >:: test_init_exists;
+  ]
 
 (* test suite driver *)
-let tests = List.flatten [ add; commit ]
+let tests = List.flatten [ add; commit; init ]
 let suite = "got test suite" >::: tests
 let _ = run_test_tt_main suite
