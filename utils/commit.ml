@@ -139,4 +139,19 @@ let clear_commit_history () =
         print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg))
     commit_files
 
-let restore_working_dir_to (timestamp : Filesystem.filename) : unit = ()
+let restore_working_dir_to (timestamp : Filesystem.filename) : unit =
+  if not (Filesystem.check_empty_stage ()) then
+    raise (Filesystem.Unsaved_changes "save local changes before continuing")
+  else (
+    Filesystem.clear_working_directory ();
+    let commit = fetch_commit timestamp in
+    let file_hash_pairs =
+      commit.changes |> List.map (fun (f, h, m) -> (f, h))
+    in
+    List.iter
+      (fun (f, h) ->
+        Filesystem.string_to_file
+          (Filesystem.Repo.root () ^ f)
+          (Blob.get_blob_contents h))
+      file_hash_pairs;
+    ())
