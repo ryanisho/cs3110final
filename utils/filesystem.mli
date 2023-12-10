@@ -10,6 +10,7 @@ module Repo : sig
   val root : ?base_dir:filename -> unit -> filename
   val got_dir : ?base_dir:filename -> unit -> filename
   val stage_file : ?base_dir:filename -> unit -> filename
+  val config_file : ?base_dir:filename -> unit -> filename
   val commit_dir : ?base_dir:filename -> unit -> filename
   val blob_dir : ?base_dir:filename -> unit -> filename
   val metadata_file : ?base_dir:filename -> unit -> filename
@@ -24,6 +25,8 @@ val got_initialized : string -> unit
 
 val make_empty_stage : unit -> unit
 (** Create [stage.msh] with empty contents *)
+
+val make_temp_dir : string -> string
 
 val find_files : filename list -> filename list
 (** Check that all listed files exist; raise a Faliure if not *)

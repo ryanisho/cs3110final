@@ -13,7 +13,7 @@ let () =
     | "checkout" :: branch -> failwith "TODO"
     | "merge" :: branch -> failwith "TODO"
     | "stash" :: _ -> failwith "TODO"
-    | "diff" :: f -> failwith "TOOD"
+    | "diff" :: _ -> Commands.Diff.run ()
     | [] ->
         "========================================================================\n"
         ^ "          ______                  _______               \

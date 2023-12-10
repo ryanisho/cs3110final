@@ -33,6 +33,13 @@ let fetch_latest_commit_changes () =
 let fetch_latest_commit_files () =
   fetch_latest_commit_changes () |> List.map (fun (name, hash, mode) -> name)
 
+let fetch_latest_commit_hashes () =
+  fetch_latest_commit_changes () |> List.map (fun (name, hash, mode) -> name)
+
+let fetch_latest_commit_file_hash_pairs () =
+  fetch_latest_commit_changes ()
+  |> List.map (fun (name, hash, mode) -> (name, hash))
+
 let join_changes stage =
   let prev_changes = fetch_latest_commit_changes () in
   let curr_changes =

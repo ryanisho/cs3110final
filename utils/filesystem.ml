@@ -7,6 +7,7 @@ module Repo = struct
   let root ?(base_dir = ".") () = base_dir ^ "/repo/"
   let got_dir ?(base_dir = ".") () = root ~base_dir () ^ ".got/"
   let stage_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "stage.msh"
+  let config_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "config.msh"
   let commit_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "commits/"
   let blob_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "blobs/"
   let metadata_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "metadata.msh"
@@ -31,6 +32,16 @@ let make_empty_stage () =
   let channel = open_out (Repo.stage_file ()) in
   output_string channel "";
   close_out channel
+
+let make_empty_config () =
+  let channel = open_out (Repo.config_file ()) in
+  output_string channel "";
+  close_out channel
+
+let make_temp_dir dir_name =
+  let dir_path = Repo.got_dir () ^ dir_name in
+  Sys.mkdir dir_path 0o755;
+  dir_path
 
 let rec find_files files =
   match files with

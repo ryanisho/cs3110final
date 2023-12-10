@@ -48,6 +48,15 @@ val fetch_latest_commit_files : unit -> filename list
 val fetch_latest_commit_changes : unit -> (filename * Hash.t * Stage.mode) list
 (** Fetches the changes in the latest commit. *)
 
+val fetch_latest_commit_files : unit -> filename list
+(** Fetches the files in the latest commit. *)
+
+val fetch_latest_commit_hashes : unit -> Hash.t list
+(** Fetches the hashes of the files in the latest commit. *)
+
+val fetch_latest_commit_file_hash_pairs : unit -> (filename * Hash.t) list
+(** Fetches the files and hashes in the latest commit. *)
+
 val get_full_commit_history : unit -> t list
 (** Retrieves the full history of commits, sorted from the most recent to the
     oldest. *)

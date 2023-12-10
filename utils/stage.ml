@@ -29,6 +29,14 @@ let get_staged_files () =
   let staged = marshal_from_stage_file () in
   List.map (fun m -> m.name) staged
 
+let get_staged_hashes () =
+  let staged = marshal_from_stage_file () in
+  List.map (fun m -> m.hash) staged
+
+let get_staged_name_hash_pairs () =
+  let staged = marshal_from_stage_file () in
+  List.map (fun m -> (m.name, m.hash)) staged
+
 let rec update_metadata (file : string) (metadata : t) : t =
   match metadata with
   | data :: tl ->

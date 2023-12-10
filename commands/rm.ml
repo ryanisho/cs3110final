@@ -1,15 +1,14 @@
 let check_tracked files =
-  let rec check_tracked' files =
-    match files with
-    | [] -> ()
-    | f :: tl ->
-        if List.mem f (Utils.Track.get_tracked_files ()) then check_tracked' tl
-        else raise (Failure ("pathspec " ^ f ^ " does not exist."))
-  in
-  check_tracked' files
+  List.iter
+    (fun f ->
+      if not (List.mem f (Utils.Track.get_tracked_files ())) then
+        raise
+          (Utils.Filesystem.File_not_found
+             ("fatal: pathspec '" ^ f ^ "' did not match any files")))
+    files
 
 let remove files =
-  (* Utils.Filesystem.remove_files files; *)
+  Utils.Filesystem.remove_files files;
   Utils.Stage.remove_files_from_stage files;
   List.map (fun s -> "rm " ^ s) files |> String.concat "\n"
 

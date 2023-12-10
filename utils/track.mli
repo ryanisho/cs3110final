@@ -6,6 +6,11 @@ val get_tracked_files : unit -> string list
     committed. It combines the files from both these sources, removing
     duplicates. *)
 
+val get_tracked_file_hash_pairs : unit -> (string * string) list
+(** [get_tracked_file_hash_pairs] returns a list of pairs of files and their
+    hashes. It combines the files from both the staged and committed sources,
+    removing duplicates. *)
+
 val untrack_file : string -> unit
 (** [untrack_file] is a function intended to untrack a file. Currently, it is
     not implemented and raises a failure when called. *)

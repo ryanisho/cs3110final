@@ -26,6 +26,14 @@ val get_staged_files : unit -> string list
 (** Get tracked files. We combine results from the staging area with that of the
     previous commit (if applicable) *)
 
+val get_staged_hashes : unit -> string list
+(** Get tracked files' hashes. We combine results from the staging area with
+    that of the previous commit (if applicable) *)
+
+val get_staged_name_hash_pairs : unit -> (string * string) list
+(** Get tracked files' hashes. We combine results from the staging area with
+    that of the previous commit (if applicable) *)
+
 (* Update a file's metadata with name and mode, updating contents and hash as
    well. If it is not in the present metadata, insert it into the metadata
    list *)
