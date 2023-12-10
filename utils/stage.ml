@@ -63,7 +63,7 @@ let rec remove_metadata (file : string) (metadata : t) : t =
       [
         {
           name = file;
-          hash = Hash.hash_file file;
+          hash = Hash.hash_file (Filesystem.Repo.root () ^ file);
           contents = "";
           modification = Delete;
         };
