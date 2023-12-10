@@ -17,3 +17,5 @@ let get_tracked_file_hash_pairs () =
   let staged_file_hash = Stage.get_staged_name_hash_pairs () in
   let committed_file_hash = Commit.fetch_latest_commit_file_hash_pairs () in
   union staged_file_hash committed_file_hash
+
+let untrack_file file = failwith "TODO"
