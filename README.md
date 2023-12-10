@@ -67,6 +67,7 @@ echo "buzz" > repo/fizz.txt
 ./got commit -m "Create fizz"
 ./got rm fizz.txt
 ./got commit -m "Remove fizz" 
+```
 
 ## Authors of 'got'
 
