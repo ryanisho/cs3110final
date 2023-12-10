@@ -54,10 +54,6 @@
 
 ---
 
-Note: This README represents a hypothetical CLI tool and its functionalities. The actual capabilities and implementation details would depend on the specific code and logic built into the 'got' program.
-
---- 
-
 ## Authors of 'got'
 
 1. **Bryant Park (blp73)**
