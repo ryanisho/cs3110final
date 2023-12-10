@@ -8,6 +8,7 @@ let () =
     | "commit" :: args -> Commands.Commit.run args
     | "log" :: _ -> Commands.Log.run ()
     | "status" :: _ -> Commands.Status.run ()
+    | "reset" :: args -> Commands.Reset.run args
     | "branch" :: _ -> failwith "TODO"
     | "checkout" :: branch -> failwith "TODO"
     | "merge" :: branch -> failwith "TODO"
