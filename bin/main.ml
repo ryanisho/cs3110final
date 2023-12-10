@@ -11,9 +11,8 @@ let () =
     | "reset" :: args -> Commands.Reset.run args
     | "branch" :: args -> Commands.Branch.run args
     | "checkout" :: args -> Commands.Checkout.run args
-    | "merge" :: branch -> failwith "TODO"
-    | "stash" :: _ -> failwith "TODO"
-    | "diff" :: f -> failwith "TOOD"
+    (* | "merge" :: branch -> failwith "TODO" | "stash" :: _ -> failwith "TODO"
+       | "diff" :: f -> failwith "TOOD" *)
     | [] ->
         "========================================================================\n"
         ^ "          ______                  _______               \
