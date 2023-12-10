@@ -136,3 +136,20 @@ let clear_commit_history () =
     (fun filename -> Sys.remove (Filesystem.Repo.commit_dir () ^ filename))
     commit_filenames;
   Printf.printf "Clearing commit history...\n"
+
+let restore_working_dir_to (timestamp : Filesystem.filename) : unit =
+  if not (Filesystem.check_empty_stage ()) then
+    raise (Filesystem.Unsaved_changes "save local changes before continuing")
+  else (
+    Filesystem.clear_working_directory ();
+    let commit = fetch_commit timestamp in
+    let file_hash_pairs =
+      commit.changes |> List.map (fun (f, h, m) -> (f, h))
+    in
+    List.iter
+      (fun (f, h) ->
+        Filesystem.string_to_file
+          (Filesystem.Repo.root () ^ f)
+          (Blob.get_blob_contents h))
+      file_hash_pairs;
+    ())

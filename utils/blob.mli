@@ -12,13 +12,13 @@ type t = {
 val make_blob : string -> t
 (** Create a blob from a file. *)
 
-val write_blob : string -> unit
+val write_blob : t -> unit
 (** Write a blob to the blob directory. *)
 
-val write_blobs : string list -> unit
+val write_blobs : t list -> unit
 (** Write multiple blobs to the blob directory. *)
 
-val get_blob : string -> string option
+(* val get_blob : string -> string option *)
 (** Retrieve a blob by its hash. Returns an option type. *)
 
 val get_blob_contents : string -> string

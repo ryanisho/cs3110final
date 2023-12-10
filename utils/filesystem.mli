@@ -1,5 +1,6 @@
 exception File_not_found of string
 exception Got_initialized of string
+exception Unsaved_changes of string
 
 type filename = string
 
@@ -25,6 +26,12 @@ val got_initialized : string -> unit
 val make_empty_stage : unit -> unit
 (** Create [stage.msh] with empty contents *)
 
+val check_empty_stage : unit -> bool
+(** Check if [stage.msh] is empty *)
+
+val clear_working_directory : unit -> unit
+(** Remove all files except [.got/] in the working directory *)
+
 val find_files : filename list -> filename list
 (** Check that all listed files exist; raise a Faliure if not *)
 
@@ -33,6 +40,9 @@ val list_files : unit -> filename list
 
 val remove_files : filename list -> unit
 (** Remove listed files *)
+
+val string_to_file : string -> string -> unit
+(** Given a string and a filename, write the string to the file *)
 
 val string_of_file : filename -> filename
 (** Given a filename, return its contents as a string *)

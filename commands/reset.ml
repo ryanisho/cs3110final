@@ -15,10 +15,16 @@ let reset_commit_history_to (timestamp : Utils.Filesystem.filename) =
     }
 
 let run = function
-  | [ "--hard"; timestamp ] -> "Hard reset has not been implemented yet!"
+  | [ "--hard"; timestamp ] -> (
+      try
+        Utils.Commit.restore_working_dir_to timestamp;
+        reset_commit_history_to timestamp;
+        "Reset repository and commit history to commit " ^ timestamp
+      with _ ->
+        "Error: could not reset repository and commit history to that commit!")
   | timestamp :: [] -> (
       try
         reset_commit_history_to timestamp;
         "Reset commit history to commit " ^ timestamp
-      with _ -> "Could not reset commit history to that commit!")
+      with _ -> "Error: could not reset commit history to that commit!")
   | _ -> "Usage: got reset [--hard] <timestamp>"

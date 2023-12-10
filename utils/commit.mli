@@ -54,3 +54,9 @@ val get_commit_history_from_head : unit -> t list
 
 val clear_commit_history : unit -> unit
 (** Clears the commit history. *)
+
+val restore_working_dir_to : filename -> unit
+(* Restore the working directory to the commit with timestamp [timestamp]. This
+   function will be called when running got reset --hard or got checkout. If the
+   staging area is not empty or there are untracked/edited files, this function
+   will fail. *)
