@@ -3,10 +3,7 @@
 (** The [init] module is responsible for initializing a new Got version-control
     system repository in a given directory. *)
 
-type empty_command = unit -> string
-(** [empty_command] is a type for commands that do not return any value. *)
-
-val run : string list -> empty_command
+val run : Command.argumented_command
 (** [run] initializes a new Got version-control system repository in the given
     directory.
     @param args

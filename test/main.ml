@@ -27,13 +27,13 @@ let test_commit messages expected_message _ =
 
 let test_init_new _ =
   let _ = Unix.system "rm -rf ./repo/.got/" in
-  let result = Commands.Init.run [] () in
+  let result = Commands.Init.run [] in
   let result = String.sub result 0 28 in
   assert_equal result "Initialized empty repository";
   ()
 
 let test_init_exists _ =
-  let result = Commands.Init.run [] () in
+  let result = Commands.Init.run [] in
   assert_equal result
     "fatal: a got version-control system already exists in the directory.";
   ()

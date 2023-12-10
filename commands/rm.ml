@@ -13,8 +13,7 @@ let remove files =
   Utils.Stage.remove_files_from_stage files;
   List.map (fun s -> "rm " ^ s) files |> String.concat "\n"
 
-let rec run : Command.argumented_command =
- fun files ->
+let rec run (files : string list) =
   try
     Utils.Filesystem.got_initialized "rm";
     check_tracked files;

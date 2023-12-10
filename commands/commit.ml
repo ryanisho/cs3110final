@@ -1,5 +1,4 @@
-let rec run : Command.argumented_command =
- fun args ->
+let rec run (args : string list) =
   try
     Utils.Filesystem.got_initialized "commit";
     let stage = Utils.Stage.marshal_from_stage_file () in

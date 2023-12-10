@@ -2,7 +2,7 @@ let () =
   let args = List.tl (Array.to_list Sys.argv) in
   let output =
     match args with
-    | "init" :: rest -> Commands.Init.run rest ()
+    | "init" :: rest -> Commands.Init.run rest
     | "add" :: files -> Commands.Add.run files
     | "rm" :: files -> Commands.Rm.run files
     | "commit" :: args -> Commands.Commit.run args

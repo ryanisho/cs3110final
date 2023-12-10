@@ -1,8 +1,7 @@
 let commit_to_log_entry (commit : Utils.Commit.t) =
   "[" ^ commit.timestamp ^ "] " ^ commit.message ^ "\n"
 
-let rec run : Command.empty_command =
- fun () ->
+let rec run () =
   try
     Utils.Filesystem.got_initialized "log";
     let commit_history = Utils.Commit.get_commit_history_from_head () in
