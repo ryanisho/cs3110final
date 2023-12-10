@@ -30,6 +30,9 @@ val write_commit : Stage.t -> string -> string * string
 (** Writes a new commit with the given stage and message, and returns the
     timestamp. *)
 
+val write_initial_commit : unit -> string * string
+(* Writes a new initial commit, and returns the timestamp *)
+
 val fetch_commit : filename -> t
 (** Fetches a commit by its timestamp. *)
 
