@@ -6,11 +6,8 @@ let rec run (args : string list) =
     else
       match args with
       | [ "-m"; message ] ->
-          let timestamp, changes = Utils.Commit.write_commit stage message in
-          "Committed " ^ timestamp ^ " :: " ^ message ^ "\n" ^ changes
+        let timestamp, changes = Utils.Commit.write_commit stage message in
+        "Committed " ^ timestamp ^ " :: " ^ message ^ "\n" ^ changes
       | _ -> "Usage: got commit -m <msg>"
   with
   | Utils.Filesystem.Got_initialized msg -> msg
-  | _ ->
-      Unix.sleepf 1.5;
-      run args

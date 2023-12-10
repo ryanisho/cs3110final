@@ -9,9 +9,4 @@ let rec run () =
       commit_history |> List.map commit_to_log_entry |> List.fold_left ( ^ ) ""
     in
     String.sub output 0 (String.length output - 1)
-  with
-  | Utils.Filesystem.Got_initialized msg -> msg
-  | _ ->
-      (* Handle other exceptions *)
-      Unix.sleepf 1.5;
-      run ()
+  with Utils.Filesystem.Got_initialized msg -> msg
