@@ -1,5 +1,3 @@
-(* TOOD: encapsulate in module? *)
-
 type t = {
   hash : Hash.t;
   contents : string;
@@ -25,7 +23,7 @@ let get_blob hash =
   |> Array.to_list
   |> List.find_opt (fun b -> b = hash)
 
-(* Get the contents of a blob; raise Failure if no such blob exists *)
+(* Get the contents of a blob *)
 let get_blob_contents hash =
   get_blob hash |> Option.get |> Filesystem.marshal_file_to_data |> fun c ->
   c.contents

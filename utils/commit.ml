@@ -5,7 +5,7 @@ type t = {
   message : string;
   parent : Filesystem.filename option;
   merge_parent : Filesystem.filename option;
-  changes : (Filesystem.filename * Hash.t) list;
+  changes : (Filesystem.filename * Hash.t * Stage.mode) list;
 }
 
 let retrieve_all_commit_filenames () : Filesystem.filename list =
@@ -31,42 +31,65 @@ let fetch_latest_commit_changes () =
   | Some c -> c.changes
 
 let fetch_latest_commit_files () =
-  fetch_latest_commit_changes () |> List.map fst
+  fetch_latest_commit_changes () |> List.map (fun (name, hash, mode) -> name)
 
 let join_changes stage =
   let prev_changes = fetch_latest_commit_changes () in
   let curr_changes =
     List.map
       (fun (file_metadata : Stage.file_metadata) ->
-        (file_metadata.name, file_metadata.hash))
+        (file_metadata.name, file_metadata.hash, file_metadata.modification))
       stage
   in
   List.fold_left
-    (fun acc (file, hash) ->
-      if List.exists (fun (prev_file, _) -> prev_file = file) prev_changes then
+    (fun acc (file, hash, mode) ->
+      if List.exists (fun (prev_file, _, _) -> prev_file = file) acc then
         List.map
-          (fun (prev_file, prev_hash) ->
-            if prev_file = file then (file, hash) else (prev_file, prev_hash))
+          (fun (prev_file, prev_hash, prev_mode) ->
+            if prev_file = file then
+              match mode with
+              (* Spaghetti - fix later *)
+              | Stage.Create | Stage.Edit ->
+                  if prev_mode = Stage.Create then (file, hash, Stage.Edit)
+                  else (file, hash, Stage.Create)
+              | Stage.Delete -> (file, hash, mode)
+            else (prev_file, prev_hash, prev_mode))
           acc
-      else (file, hash) :: acc)
+      else (file, hash, mode) :: acc)
     prev_changes curr_changes
 
-let write_commit (stage : Stage.t) (message : string) : string =
-  (* TODO: actually write blobs to disk (probably in Add) *)
+let remove_deleted_files changes : (string * string * Stage.mode) list =
+  List.filter (fun (_, _, mode) -> mode <> Stage.Delete) changes
+
+let list_changes changes =
+  List.map
+    (fun (name, hash, mode) ->
+      let prefix =
+        match mode with
+        | Stage.Create -> "create mode  "
+        | Stage.Edit -> "edit mode    "
+        | Stage.Delete -> "delete mode "
+      in
+      prefix ^ " " ^ name)
+    changes
+  |> String.concat "\n"
+
+let write_commit (stage : Stage.t) (message : string) : string * string =
+  let complete_changes = join_changes stage in
   let commit : t =
     {
-      timestamp = string_of_int (int_of_float (Unix.time ()));
+      timestamp = string_of_float (Unix.gettimeofday ());
       message;
       parent = retrieve_latest_commit_filename ();
       merge_parent = None;
-      changes = join_changes stage;
+      changes = complete_changes |> remove_deleted_files;
     }
   in
   (Filesystem.marshal_data_to_file : t -> string -> unit)
     commit
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
   Filesystem.make_empty_stage ();
-  commit.timestamp
+  (commit.timestamp, complete_changes |> list_changes)
 
 let get_full_commit_history () : t list =
   retrieve_all_commit_filenames ()

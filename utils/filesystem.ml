@@ -9,7 +9,7 @@ module Repo = struct
   let stage_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "stage.msh"
   let commit_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "commits/"
   let blob_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "blobs/"
-  let branch_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "branches/"
+  let metadata_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "metadata.msh"
   let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
 
@@ -21,9 +21,10 @@ let got_initialized cmd =
   | "init", true ->
       raise
         (Got_initialized
-           "A Got version-control system already exists in the directory.")
+           "fatal: a got version-control system already exists in the \
+            directory.")
   | "init", false -> ()
-  | _, false -> raise (Got_initialized "not a got repository")
+  | _, false -> raise (Got_initialized "fatal: not a got repository")
   | _, true -> ()
 
 let make_empty_stage () =
@@ -36,7 +37,10 @@ let rec find_files files =
   | [] -> []
   | file :: tl ->
       if Sys.file_exists (Repo.root () ^ file) then file :: find_files tl
-      else raise (File_not_found (file ^ " does not exist."))
+      else
+        raise
+          (File_not_found
+             ("fatal: pathspec " ^ file ^ " did not match any files."))
 
 let list_files () =
   let root = Repo.root () in
