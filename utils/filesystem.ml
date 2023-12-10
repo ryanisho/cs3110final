@@ -1,5 +1,6 @@
 exception File_not_found of string
 exception Got_initialized of string
+exception Unsaved_changes of string
 
 type filename = string
 
@@ -31,6 +32,31 @@ let make_empty_stage () =
   let channel = open_out (Repo.stage_file ()) in
   output_string channel "";
   close_out channel
+
+let check_empty_stage () =
+  let channel = open_in (Repo.stage_file ()) in
+  let is_empty = in_channel_length channel = 0 in
+  close_in channel;
+  is_empty
+
+let rec remove_dir dir =
+  let files = Sys.readdir dir in
+  Array.iter
+    (fun file ->
+      let path = Filename.concat dir file in
+      if Sys.is_directory path then remove_dir path else Sys.remove path)
+    files;
+  Unix.rmdir dir
+
+let clear_working_directory () =
+  let root = Repo.root () in
+  let files = Sys.readdir root |> Array.to_list in
+  List.iter
+    (fun file ->
+      if file <> ".got" && file <> ".gitkeep" then
+        let path = root ^ file in
+        if Sys.is_directory path then remove_dir path else Sys.remove path)
+    files
 
 let rec find_files files =
   match files with
@@ -70,8 +96,14 @@ let rec remove_files files : unit =
       Sys.remove (Repo.root () ^ file);
       remove_files tl
 
+(* DONT CHANGE THE PATH*)
+let string_to_file file content =
+  let oc = open_out file in
+  output_string oc content;
+  close_out oc
+
 let string_of_file file =
-  let ic = open_in (Repo.root () ^ file) in
+  let ic = open_in file in
   let n = in_channel_length ic in
   let s = Bytes.create n in
   really_input ic s 0 n;

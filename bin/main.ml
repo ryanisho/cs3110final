@@ -2,15 +2,15 @@ let () =
   let args = List.tl (Array.to_list Sys.argv) in
   let output =
     match args with
-    | "config" :: args -> Commands.Config.run args
-    | "init" :: rest -> Commands.Init.run rest ()
+    | "init" :: rest -> Commands.Init.run rest
     | "add" :: files -> Commands.Add.run files
     | "rm" :: files -> Commands.Rm.run files
     | "commit" :: args -> Commands.Commit.run args
     | "log" :: _ -> Commands.Log.run ()
     | "status" :: _ -> Commands.Status.run ()
-    | "branch" :: _ -> failwith "TODO"
-    | "checkout" :: branch -> failwith "TODO"
+    | "reset" :: args -> Commands.Reset.run args
+    | "branch" :: args -> Commands.Branch.run args
+    | "checkout" :: args -> Commands.Checkout.run args
     | "merge" :: branch -> failwith "TODO"
     | "stash" :: _ -> failwith "TODO"
     | "diff" :: f -> failwith "TOOD"
@@ -57,7 +57,9 @@ let () =
         ^ "        \\::/____/                 \
            ~~                                   \n"
         ^ "=========================================================================\n"
-        ^ "Usage: got [init <path> | add <file> | commit <message> | log]"
+        ^ "Usage: got [init <path> | add <file> | commit -m <message> | log | \
+           reset [--hard] <commit> | checkout [-b] <branch>] | branch [-D \
+           <branch>]"
     | _ -> "Command not supported!"
   in
   print_endline output

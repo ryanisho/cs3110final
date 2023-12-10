@@ -8,33 +8,30 @@ type t = {
   changes : (Filesystem.filename * Hash.t * Stage.mode) list;
 }
 
-let retrieve_all_commit_filenames () : Filesystem.filename list =
-  Filesystem.Repo.commit_dir ()
-  |> Sys.readdir |> Array.to_list |> List.sort compare
-
-let retrieve_latest_commit_filename () : Filesystem.filename option =
-  List.nth_opt (List.rev (retrieve_all_commit_filenames ())) 0
+let retrieve_head_commit_filename () : Filesystem.filename option =
+  let metadata = Repo_metadata.read_from_file () in
+  List.assoc_opt metadata.head metadata.branches
 
 let fetch_commit (timestamp : Filesystem.filename) : t =
   Filesystem.marshal_file_to_data (Filesystem.Repo.commit_dir () ^ timestamp)
 
-let fetch_latest_commit () =
-  let commit_name = retrieve_latest_commit_filename () in
+let fetch_head_commit () =
+  let commit_name = retrieve_head_commit_filename () in
   match commit_name with
   | Some c -> Some (fetch_commit c)
   | None -> None
 
-let fetch_latest_commit_changes () =
-  let commit = fetch_latest_commit () in
+let fetch_head_commit_changes () =
+  let commit = fetch_head_commit () in
   match commit with
   | None -> []
   | Some c -> c.changes
 
-let fetch_latest_commit_files () =
-  fetch_latest_commit_changes () |> List.map (fun (name, hash, mode) -> name)
+let fetch_head_commit_files () =
+  fetch_head_commit_changes () |> List.map (fun (name, hash, mode) -> name)
 
 let join_changes stage =
-  let prev_changes = fetch_latest_commit_changes () in
+  let prev_changes = fetch_head_commit_changes () in
   let curr_changes =
     List.map
       (fun (file_metadata : Stage.file_metadata) ->
@@ -58,6 +55,23 @@ let join_changes stage =
       else (file, hash, mode) :: acc)
     prev_changes curr_changes
 
+let get_curr_changes stage =
+  let prev_changes = fetch_head_commit_changes () in
+  let curr_changes =
+    List.map
+      (fun (file_metadata : Stage.file_metadata) ->
+        (file_metadata.name, file_metadata.hash, file_metadata.modification))
+      stage
+  in
+  let created_prev file =
+    List.exists (fun (f, _, _) -> f = file) prev_changes
+  in
+  List.map
+    (fun (file, hash, mode) ->
+      if created_prev file && mode = Stage.Create then (file, hash, Stage.Edit)
+      else (file, hash, mode))
+    curr_changes
+
 let remove_deleted_files changes : (string * string * Stage.mode) list =
   List.filter (fun (_, _, mode) -> mode <> Stage.Delete) changes
 
@@ -78,9 +92,10 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
   let metadata = Repo_metadata.read_from_file () in
   let current_branch = metadata.head in
   let complete_changes = join_changes stage in
+  let curr_changes = get_curr_changes stage in
   let commit : t =
     {
-      timestamp = string_of_float (Unix.gettimeofday ());
+      timestamp = string_of_int (int_of_float (Unix.time ()));
       message;
       parent = Some (List.assoc current_branch metadata.branches);
       merge_parent = None;
@@ -101,12 +116,12 @@ let write_commit (stage : Stage.t) (message : string) : string * string =
     }
   in
   Repo_metadata.write_to_file metadata;
-  (commit.timestamp, complete_changes |> list_changes)
+  (commit.timestamp, curr_changes |> list_changes)
 
 let write_initial_commit () : string * string =
   let commit : t =
     {
-      timestamp = string_of_float (Unix.gettimeofday ());
+      timestamp = string_of_int (int_of_float (Unix.time ()));
       message = "Initial commit";
       parent = None;
       merge_parent = None;
@@ -118,17 +133,40 @@ let write_initial_commit () : string * string =
     (Filesystem.Repo.commit_dir () ^ commit.timestamp);
   (commit.timestamp, [] |> list_changes)
 
-let get_full_commit_history () : t list =
-  retrieve_all_commit_filenames ()
-  |> List.map fetch_commit
-  |> List.sort (fun (c1 : t) (c2 : t) -> compare c1.timestamp c2.timestamp)
-  |> List.rev
+let get_commit_history_from_head () : t list =
+  let rec helper (child_timestamp : Filesystem.filename) =
+    let child_commit = fetch_commit child_timestamp in
+    match child_commit.parent with
+    | None -> [ child_commit ]
+    | Some parent_timestamp -> child_commit :: helper parent_timestamp
+  in
+  match retrieve_head_commit_filename () with
+  | None -> []
+  | Some head_commit_filename -> helper head_commit_filename
+
+let retrieve_all_commit_filenames () : Filesystem.filename list =
+  Filesystem.Repo.commit_dir ()
+  |> Sys.readdir |> Array.to_list |> List.sort compare
 
 let clear_commit_history () =
-  let commit_files = retrieve_all_commit_filenames () in
+  let commit_filenames = retrieve_all_commit_filenames () in
   List.iter
-    (fun filename ->
-      try Sys.remove (Filesystem.Repo.commit_dir () ^ filename)
-      with Sys_error msg ->
-        print_endline ("Failed to delete file " ^ filename ^ ": " ^ msg))
-    commit_files
+    (fun filename -> Sys.remove (Filesystem.Repo.commit_dir () ^ filename))
+    commit_filenames
+
+let restore_working_dir_to (timestamp : Filesystem.filename) : unit =
+  if not (Filesystem.check_empty_stage ()) then
+    raise (Filesystem.Unsaved_changes "save local changes before continuing")
+  else (
+    Filesystem.clear_working_directory ();
+    let commit = fetch_commit timestamp in
+    let file_hash_pairs =
+      commit.changes |> List.map (fun (f, h, m) -> (f, h))
+    in
+    List.iter
+      (fun (f, h) ->
+        Filesystem.string_to_file
+          (Filesystem.Repo.root () ^ f)
+          (Blob.get_blob_contents h))
+      file_hash_pairs;
+    ())

@@ -1,7 +1,4 @@
-type empty_command = unit -> string
-
-let rec run : string list -> Command.empty_command =
- fun args () ->
+let rec run (args : string list) =
   try
     Utils.Filesystem.got_initialized "init";
     let base_dir =
@@ -24,4 +21,4 @@ let rec run : string list -> Command.empty_command =
   | _ ->
       (* Handle other exceptions *)
       Unix.sleepf 1.5;
-      run args ()
+      run args

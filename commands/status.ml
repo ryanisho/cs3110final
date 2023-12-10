@@ -41,8 +41,7 @@ let get_untracked () =
   | [] -> ""
   | _ -> "Untracked files: \n" ^ set_color (String.concat "\n" untracked) red
 
-let rec run : Command.empty_command =
- fun () ->
+let rec run () =
   try
     Utils.Filesystem.got_initialized "status";
     let commited = get_commited () in

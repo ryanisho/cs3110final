@@ -4,26 +4,20 @@ type t = {
 }
 
 let make_blob file =
-  { hash = Hash.hash_file file; contents = Filesystem.string_of_file file }
+  let file_path = Filesystem.Repo.root () ^ file in
+  {
+    hash = Hash.hash_file file_path;
+    contents = Filesystem.string_of_file file_path;
+  }
 
-(* Return a list of all blobs in the blob directory *)
 (* Write blob to blob directory *)
-let write_blob file =
-  let blob = make_blob file in
-  let blob_dir = Filesystem.Repo.blob_dir () in
-  let blob_path = blob_dir ^ blob.hash in
-  Filesystem.marshal_data_to_file blob.contents blob_path
+let write_blob blob =
+  let blob_path = Filesystem.Repo.blob_dir () ^ blob.hash in
+  Filesystem.string_to_file blob_path blob.contents
 
-let write_blobs files = List.iter write_blob files
-
-(* Return an option for a blob with the hash; return None if no such blob
-   exists *)
-let get_blob hash =
-  Sys.readdir (Filesystem.Repo.blob_dir ())
-  |> Array.to_list
-  |> List.find_opt (fun b -> b = hash)
+let write_blobs blobs = List.iter write_blob blobs
 
 (* Get the contents of a blob *)
 let get_blob_contents hash =
-  get_blob hash |> Option.get |> Filesystem.marshal_file_to_data |> fun c ->
-  c.contents
+  let blob_path = Filesystem.Repo.blob_dir () ^ hash in
+  Filesystem.string_of_file blob_path

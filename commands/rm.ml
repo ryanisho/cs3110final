@@ -4,17 +4,19 @@ let check_tracked files =
     | [] -> ()
     | f :: tl ->
         if List.mem f (Utils.Track.get_tracked_files ()) then check_tracked' tl
-        else raise (Failure ("pathspec " ^ f ^ " does not exist."))
+        else
+          raise
+            (Utils.Filesystem.File_not_found
+               ("pathspec " ^ f ^ " does not exist."))
   in
   check_tracked' files
 
 let remove files =
-  (* Utils.Filesystem.remove_files files; *)
   Utils.Stage.remove_files_from_stage files;
+  Utils.Filesystem.remove_files files;
   List.map (fun s -> "rm " ^ s) files |> String.concat "\n"
 
-let rec run : Command.argumented_command =
- fun files ->
+let rec run (files : string list) =
   try
     Utils.Filesystem.got_initialized "rm";
     check_tracked files;

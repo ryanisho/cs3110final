@@ -1,5 +1,4 @@
-let rec run : Command.argumented_command =
- fun files ->
+let rec run (files : string list) =
   try
     Utils.Filesystem.got_initialized "add";
     match files with

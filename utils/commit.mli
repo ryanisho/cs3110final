@@ -23,7 +23,7 @@ val join_changes :
 val retrieve_all_commit_filenames : unit -> filename list
 (** Retrieves a list of all commit filenames in the repository. *)
 
-val retrieve_latest_commit_filename : unit -> filename option
+val retrieve_head_commit_filename : unit -> filename option
 (** Retrieves the filename of the latest commit, if any. *)
 
 val write_commit : Stage.t -> string -> string * string
@@ -39,18 +39,24 @@ val fetch_commit : filename -> t
 val list_changes : (filename * Hash.t * Stage.mode) list -> string
 (** Lists the changes in a commit. *)
 
-val fetch_latest_commit : unit -> t option
+val fetch_head_commit : unit -> t option
 (** Fetches the latest commit. *)
 
-val fetch_latest_commit_files : unit -> filename list
+val fetch_head_commit_files : unit -> filename list
 (** Fetches the files in the latest commit. *)
 
-val fetch_latest_commit_changes : unit -> (filename * Hash.t * Stage.mode) list
+val fetch_head_commit_changes : unit -> (filename * Hash.t * Stage.mode) list
 (** Fetches the changes in the latest commit. *)
 
-val get_full_commit_history : unit -> t list
+val get_commit_history_from_head : unit -> t list
 (** Retrieves the full history of commits, sorted from the most recent to the
     oldest. *)
 
 val clear_commit_history : unit -> unit
 (** Clears the commit history. *)
+
+val restore_working_dir_to : filename -> unit
+(* Restore the working directory to the commit with timestamp [timestamp]. This
+   function will be called when running got reset --hard or got checkout. If the
+   staging area is not empty or there are untracked/edited files, this function
+   will fail. *)

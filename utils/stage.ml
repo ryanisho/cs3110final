@@ -30,13 +30,14 @@ let get_staged_files () =
   List.map (fun m -> m.name) staged
 
 let rec update_metadata (file : string) (metadata : t) : t =
+  let file_path = Filesystem.Repo.root () ^ file in
   match metadata with
   | data :: tl ->
       if data.name = file then
         {
           data with
-          hash = Hash.hash_file file;
-          contents = Filesystem.string_of_file file;
+          hash = Hash.hash_file file_path;
+          contents = Filesystem.string_of_file file_path;
           modification = Create;
         }
         :: tl
@@ -45,8 +46,8 @@ let rec update_metadata (file : string) (metadata : t) : t =
       [
         {
           name = file;
-          hash = Hash.hash_file file;
-          contents = Filesystem.string_of_file file;
+          hash = Hash.hash_file file_path;
+          contents = Filesystem.string_of_file file_path;
           modification = Create;
         };
       ]
@@ -62,7 +63,7 @@ let rec remove_metadata (file : string) (metadata : t) : t =
       [
         {
           name = file;
-          hash = Hash.hash_file file;
+          hash = Hash.hash_file (Filesystem.Repo.root () ^ file);
           contents = "";
           modification = Delete;
         };
@@ -82,7 +83,8 @@ let add_files_to_stage ?(base_dir = ".") files =
   let stage = add_file_metadata files in
   Filesystem.marshal_data_to_file stage
     (Filesystem.Repo.stage_file ~base_dir ());
-  Blob.write_blobs files
+  let blobs = List.map Blob.make_blob files in
+  Blob.write_blobs blobs
 
 let remove_files_from_stage ?(base_dir = ".") files =
   let files = Filesystem.find_files files in
