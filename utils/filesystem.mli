@@ -7,7 +7,7 @@ module Repo : sig
   val stage_file : ?base_dir:filename -> unit -> filename
   val commit_dir : ?base_dir:filename -> unit -> filename
   val blob_dir : ?base_dir:filename -> unit -> filename
-  val branch_dir : ?base_dir:filename -> unit -> filename
+  val metadata_file : ?base_dir:filename -> unit -> filename
   val log_dir : ?base_dir:filename -> unit -> filename
 end
 

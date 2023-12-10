@@ -6,7 +6,7 @@ module Repo = struct
   let stage_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "stage.msh"
   let commit_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "commits/"
   let blob_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "blobs/"
-  let branch_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "branches/"
+  let metadata_file ?(base_dir = ".") () = got_dir ~base_dir () ^ "metadata.msh"
   let log_dir ?(base_dir = ".") () = got_dir ~base_dir () ^ "logs/"
 end
 

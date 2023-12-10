@@ -12,8 +12,9 @@ let run : string list -> Command.empty_command =
   else Sys.mkdir got_dir 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.blob_dir ~base_dir ()) 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.commit_dir ~base_dir ()) 0o755;
-  Sys.mkdir (Utils.Filesystem.Repo.branch_dir ~base_dir ()) 0o755;
   Sys.mkdir (Utils.Filesystem.Repo.log_dir ~base_dir ()) 0o755;
   Utils.Filesystem.make_empty_stage ();
+  let timestamp = Utils.Commit.write_commit [] "Initial commit" in
+  Utils.Repo_metadata.write_to_file (Utils.Repo_metadata.empty timestamp);
   fun () -> "Initialized empty repository in " ^ Sys.getcwd () ^ base_dir
-(* May need to fix this pathing *)
+(* May need to fix this pathing. The log message is also incorrect. *)
