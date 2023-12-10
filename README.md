@@ -1,4 +1,4 @@
-# `got` - A Command-Line Interface Tool (CS 3110 - SPR23)
+# `got` - A Command-Line Interface Tool (CS 3110 - FA23)
 
 ```
           ______                  _______               _____         
