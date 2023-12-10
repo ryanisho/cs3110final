@@ -25,12 +25,9 @@ let marshal_from_stage_file () : t =
     []
 
 (* Get staged files *)
-let get_tracked_files () =
+let get_staged_files () =
   let staged = marshal_from_stage_file () in
-  (* Fix this *)
-  let committed = [] in
-  let metadata = staged @ committed in
-  List.map (fun m -> m.name) metadata
+  List.map (fun m -> m.name) staged
 
 let rec update_metadata (file : string) (metadata : t) (modif : mode) : t =
   match (metadata, modif) with

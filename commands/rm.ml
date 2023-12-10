@@ -3,8 +3,7 @@ let is_tracked files =
     match files with
     | [] -> []
     | f :: tl ->
-        if List.mem f (Utils.Stage.get_tracked_files ()) then
-          f :: is_tracked' tl
+        if List.mem f (Utils.Stage.get_staged_files ()) then f :: is_tracked' tl
         else raise (Failure ("pathspec " ^ f ^ " does not exist."))
   in
   is_tracked' files
