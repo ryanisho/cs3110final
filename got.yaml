@@ -24,11 +24,11 @@ demo-video-url: ""
 # Write a short, attention-grabbing description of your project.
 desc: >
   Our project, Got, is a version control system, similar to Git. It implements 
-  commands standard to Git such as init, add, status, log, and diff. 
+  commands standard to Git such as init, add, commit, status, log, reset, branch, checkout. 
 
   The main functionality that Got will support is 
-  (1) Saving directories or files
-  (2) Restore past versions of files 
-  (3) Viewing past backups 
+  (1) Saving files and directories
+  (2) Restoring past versions of files and directories
+  (3) Working across multiple branches
   
-  Users can interact with Got via the command line.
+  Users can interact with Got via the command line. Run `/.got` to see the list of commands!
