@@ -1,3 +1,5 @@
+(* command.mli *)
+
 (** Commands are a function that returns an output. The output will be printed
     out in `main.ml`. *)
 

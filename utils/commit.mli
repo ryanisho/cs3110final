@@ -18,8 +18,6 @@ val join_changes :
   Stage.file_metadata list -> (filename * Hash.t * Stage.mode) list
 (** Joins the changes in a list of file metadata into a list of changes. *)
 
-(** Retrieves the stage of the commit. *)
-
 val retrieve_all_commit_filenames : unit -> filename list
 (** Retrieves a list of all commit filenames in the repository. *)
 
@@ -31,7 +29,7 @@ val write_commit : Stage.t -> string -> string * string
     timestamp. *)
 
 val write_initial_commit : unit -> string * string
-(* Writes a new initial commit, and returns the timestamp *)
+(** Writes a new initial commit, and returns the timestamp *)
 
 val fetch_commit : filename -> t
 (** Fetches a commit by its timestamp. *)
@@ -56,7 +54,7 @@ val clear_commit_history : unit -> unit
 (** Clears the commit history. *)
 
 val restore_working_dir_to : filename -> unit
-(* Restore the working directory to the commit with timestamp [timestamp]. This
-   function will be called when running got reset --hard or got checkout. If the
-   staging area is not empty or there are untracked/edited files, this function
-   will fail. *)
+(** Restore the working directory to the commit with timestamp [timestamp]. This
+    function will be called when running got reset --hard or got checkout. If
+    the staging area is not empty or there are untracked/edited files, this
+    function will fail. *)

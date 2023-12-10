@@ -1,9 +1,17 @@
+(* filesystem.ml *)
+
+(** This module contains functions for working with files. *)
+
 exception File_not_found of string
+(** Raised if file can't be found in repository *)
+
 exception Got_initialized of string
+(** Raised if got is uninitialized *)
+
 exception Unsaved_changes of string
+(** Raised if files still in staging area before branching *)
 
 type filename = string
-
 (** Types for [got] objects *)
 
 (** Paths for [got] directories and files *)

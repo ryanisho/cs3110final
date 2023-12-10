@@ -18,8 +18,5 @@ val write_blob : t -> unit
 val write_blobs : t list -> unit
 (** Write multiple blobs to the blob directory. *)
 
-(* val get_blob : string -> string option *)
-(** Retrieve a blob by its hash. Returns an option type. *)
-
 val get_blob_contents : string -> string
 (** Get the contents of a blob. Raises Failure if no such blob exists. *)
